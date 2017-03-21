@@ -1,0 +1,75 @@
+<div>
+	<div class='creep speed{{Creep.speed}}' ng-attr-id='{{Creep.objectData._id}}' ng:class="{owner: Creep.player == Creep.objectData.user || Creep.objectData.user == 0 &amp;&amp; Creep.player == Me()._id, 'anim-active': Creep.animActive, 'creep-transparent': Creep.roomController.safeMode &gt; Creep.gameTime &amp;&amp; Creep.objectData.user != Creep.roomController.user}" ng:style="{left: ((Creep.objectData.x-2)*100/50)+'%', top: ((Creep.objectData.y-2)*100/50)+'%'}">
+		<svg viewbox='0 0 500 500'>
+			<text font-size='55' ng:if='!Creep.objectData.spawning &amp;&amp; ((Creep.player == Creep.objectData.user || Creep.objectData.user == 0 &amp;&amp; Creep.player == Me()._id) &amp;&amp; Creep.displayOptions.showMyNames.creeps || Creep.player != Creep.objectData.user &amp;&amp; Creep.objectData.user != 0 &amp;&amp; Creep.displayOptions.showEnemyNames.creeps)' x='250' y='165'>
+				{{Creep.player == Creep.objectData.user || Creep.objectData.user == 0 && Creep.player == Me()._id ? Creep.objectData.name : (Creep.users[Creep.objectData.user].username)}}
+			</text>
+			<g transform='translate(250,250)'>
+				<g ng-class="{'no-transition-anim': !Creep.displayOptions.animations}" ng:style="{transform: 'rotate('+Creep.rotate+'deg)'}">
+					<g ng:if='Creep.objectData.user != 3 &amp;&amp; Creep.objectData.user != 2'>
+						<ellipse cx='0' cy='0' fill='#fff' ng:attr-opacity='{{Math.min(1, (Creep.activeBodyparts.tough + 1) / 120)}}' ng:if='Creep.activeBodyparts.tough &gt; 0' rx='56' ry='56'></ellipse>
+						<ellipse cx='0' cy='0' fill='#202020' rx='46' ry='46'></ellipse>
+						<ellipse cx='0' cy='0' ng:attr-fill="{{Creep.player == Creep.objectData.user || Creep.objectData.user == 0 &amp;&amp; Creep.player == Me()._id ? '#555' : '#622'}}" ng:if='::!Creep.users[Creep.objectData.user].badge' rx='28' ry='28'></ellipse>
+						<image app:badge-xlink-href='Creep.users[Creep.objectData.user].badge' height='56' ng:if='::Creep.users[Creep.objectData.user].badge' width='56' x='-28' xlink:href='' y='-28'></image>
+						<path class='bodypart-{{bodypart.type}}' fill='transparent' ng:attr-d='{{bodypart.path}}' ng:repeat='bodypart in Creep.bodypartPaths track by bodypart.type' stroke-width='19'></path>
+						<ellipse cx='0' cy='0' fill='transparent' rx='30' ry='30' stroke-width='4' stroke='#181818'></ellipse>
+						<ellipse cx='0' cy='0' fill='#fff' ng:attr-rx='{{20 * Math.min(1, (Creep.resourcesTotal) / Creep.objectData.energyCapacity)}}' ng:attr-ry='{{20 * Math.min(1, (Creep.resourcesTotal) / Creep.objectData.energyCapacity)}}' ng:if='Creep.resourcesTotal &gt; Creep.objectData.energy + (Creep.objectData.power||0)'></ellipse>
+						<ellipse cx='0' cy='0' fill='#f41f33' ng:attr-rx='{{20 * Math.min(1, (Creep.objectData.energy+Creep.objectData.power) / Creep.objectData.energyCapacity)}}' ng:attr-ry='{{20 * Math.min(1, (Creep.objectData.energy+Creep.objectData.power) / Creep.objectData.energyCapacity)}}' ng:if='Creep.objectData.power'></ellipse>
+						<ellipse cx='0' cy='0' fill='#ffe56d' ng:attr-rx='{{20 * Math.min(1, Creep.objectData.energy / Creep.objectData.energyCapacity)}}' ng:attr-ry='{{20 * Math.min(1, Creep.objectData.energy / Creep.objectData.energyCapacity)}}' ng:if='Creep.objectData.energy'></ellipse>
+						<animateTransform attributeName='transform' attributeType='xml' dur='10s' from='0 0 0' ng:if='::Creep.users[Creep.objectData.user].badge._watching' repeatCount='indefinite' to='360 0 0' type='rotate'></animateTransform>
+					</g>
+					<g ng:if='Creep.objectData.user == 3 || Creep.objectData.user == 2'>
+						<path d='M-30 15 L 0 -35 L 30 15 L 20 35 L -20 35 Z' fill='#f93842' stroke-width='12' stroke='#300000'></path>
+					</g>
+					<ellipse cx='0' cy='0' fill='#f93842' opacity='0' rx='46' ry='46'>
+						<animate app-attr="calcMode#Creep.displayOptions.animations ? 'linear' : 'discrete'" app:animation-paused attributeName='opacity' attributeType='XML' begin='indefinite' class='anim-attacked' keyTimes='0;0.33;1' ng:attr-dur='{{0.7 * 100 / Creep.speed}}s' repeatCount='0' values='0; 0.5; 0'></animate>
+					</ellipse>
+					<ellipse cx='0' cy='0' fill='#65fd62' opacity='0' rx='46' ry='46'>
+						<animate app-attr="calcMode#Creep.displayOptions.animations ? 'linear' : 'discrete'" app:animation-paused attributeName='opacity' attributeType='XML' begin='indefinite' class='anim-healed' keyTimes='0;0.33;1' ng:attr-dur='{{0.7 * 100 / Creep.speed}}s' repeatCount='0' values='0; 0.5; 0'></animate>
+					</ellipse>
+				</g>
+				<animateTransform app-attr="calcMode#Creep.displayOptions.animations ? 'linear' : 'discrete'" attributeName='transform' attributeType='XML' begin='indefinite' class='anim-top' keyTimes='0;0.33;1' ng:attr-dur='{{0.95 * 100 / Creep.speed}}s' ng:if='Creep.animActive' repeatCount='0' type='translate' values='250 250; 250 230; 250 250'></animateTransform>
+				<animateTransform app-attr="calcMode#Creep.displayOptions.animations ? 'linear' : 'discrete'" attributeName='transform' attributeType='XML' begin='indefinite' class='anim-top-right' keyTimes='0;0.33;1' ng:attr-dur='{{0.95 * 100 / Creep.speed}}s' ng:if='Creep.animActive' repeatCount='0' type='translate' values='250 250; 270 230; 250 250'></animateTransform>
+				<animateTransform app-attr="calcMode#Creep.displayOptions.animations ? 'linear' : 'discrete'" attributeName='transform' attributeType='XML' begin='indefinite' class='anim-right' keyTimes='0;0.33;1' ng:attr-dur='{{0.95 * 100 / Creep.speed}}s' ng:if='Creep.animActive' repeatCount='0' type='translate' values='250 250; 270 250; 250 250'></animateTransform>
+				<animateTransform app-attr="calcMode#Creep.displayOptions.animations ? 'linear' : 'discrete'" attributeName='transform' attributeType='XML' begin='indefinite' class='anim-bottom-right' keyTimes='0;0.33;1' ng:attr-dur='{{0.95 * 100 / Creep.speed}}s' ng:if='Creep.animActive' repeatCount='0' type='translate' values='250 250; 270 270; 250 250'></animateTransform>
+				<animateTransform app-attr="calcMode#Creep.displayOptions.animations ? 'linear' : 'discrete'" attributeName='transform' attributeType='XML' begin='indefinite' class='anim-bottom' keyTimes='0;0.33;1' ng:attr-dur='{{0.95 * 100 / Creep.speed}}s' ng:if='Creep.animActive' repeatCount='0' type='translate' values='250 250; 250 270; 250 250'></animateTransform>
+				<animateTransform app-attr="calcMode#Creep.displayOptions.animations ? 'linear' : 'discrete'" attributeName='transform' attributeType='XML' begin='indefinite' class='anim-bottom-left' keyTimes='0;0.33;1' ng:attr-dur='{{0.95 * 100 / Creep.speed}}s' ng:if='Creep.animActive' repeatCount='0' type='translate' values='250 250; 230 270; 250 250'></animateTransform>
+				<animateTransform app-attr="calcMode#Creep.displayOptions.animations ? 'linear' : 'discrete'" attributeName='transform' attributeType='XML' begin='indefinite' class='anim-left' keyTimes='0;0.33;1' ng:attr-dur='{{0.95 * 100 / Creep.speed}}s' ng:if='Creep.animActive' repeatCount='0' type='translate' values='250 250; 230 250; 250 250'></animateTransform>
+				<animateTransform app-attr="calcMode#Creep.displayOptions.animations ? 'linear' : 'discrete'" attributeName='transform' attributeType='XML' begin='indefinite' class='anim-top-left' keyTimes='0;0.33;1' ng:attr-dur='{{0.95 * 100 / Creep.speed}}s' ng:if='Creep.animActive' repeatCount='0' type='translate' values='250 250; 230 230; 250 250'></animateTransform>
+			</g>
+		</svg>
+	</div>
+	<div app-visible='Creep.displayOptions.showCreepSpeech &amp;&amp; Creep.say._visible' class='creep creep-say speed{{Creep.speed}}' ng:class="{owner: Creep.player == Creep.objectData.user || Creep.objectData.user == 0 &amp;&amp; Creep.player == Me()._id, 'anim-active': Creep.animActive}" ng:style="{left: ((Creep.objectData.x-2)*100/50)+'%', top: ((Creep.objectData.y-2)*100/50)+'%'}">
+		<svg ng:if='Creep.say &amp;&amp; (Creep.say.isPublic || Creep.player == Creep.objectData.user || Creep.objectData.user == 0 &amp;&amp; Creep.player == Me()._id)' viewbox='0 0 500 500'>
+			<rect height='100' ng-attr-fill="{{Creep.say.isPublic ? '#d88' : '#ccc'}}" rx='30' ry='30' stroke-width='8' stroke='#111' width='200' x='250' y='80'></rect>
+			<path d='M 250 170 h 30 l -30 30 l -30 -30 z' ng-attr-fill="{{Creep.say.isPublic ? '#d88' : '#ccc'}}"></path>
+			<text font-size='60' x='250' y='148'>
+				{{Creep.say.message}}
+			</text>
+		</svg>
+	</div>
+	<svg class='anim-shot' height='14%' ng:if='Creep.shotAnim' ng:style="{left: ((Creep.shotAnim.x-3)*100/50)+'%', top: ((Creep.shotAnim.y-3)*100/50)+'%'}" viewbox='0 0 700 700' width='14%'>
+		<line ng:attr-stroke="{{Creep.shotAnim.type == 'rangedAttack' ? '#5d80b2' : Creep.shotAnim.type == 'rangedHeal' ? '#65fd62' : '#ffe56d'}}" stroke-width='12' transform='translate(350,350)'>
+			<animate app-attr="calcMode#Creep.displayOptions.animations ? 'linear' : 'discrete'" attributeName='x1' attributeType='XML' keyTimes='0;0.4;1' ng:attr-dur='{{0.6 * 100 / Creep.speed}}s' ng:attr-values="{{ ((Creep.shotAnim.fromX - Creep.shotAnim.x) * 100)+';'+((Creep.shotAnim.fromX - Creep.shotAnim.x) * 100)+';0' }}" repeatCount='0'></animate>
+			<animate app-attr="calcMode#Creep.displayOptions.animations ? 'linear' : 'discrete'" attributeName='y1' attributeType='XML' keyTimes='0;0.4;1' ng:attr-dur='{{0.6 * 100 / Creep.speed}}s' ng:attr-values="{{ ((Creep.shotAnim.fromY - Creep.shotAnim.y) * 100)+';'+((Creep.shotAnim.fromY - Creep.shotAnim.y) * 100)+';0' }}" repeatCount='0'></animate>
+			<animate app-attr="calcMode#Creep.displayOptions.animations ? 'linear' : 'discrete'" attributeName='x2' attributeType='XML' keyTimes='0;0.6;1' ng:attr-dur='{{0.6 * 100 / Creep.speed}}s' ng:attr-values="{{ ((Creep.shotAnim.fromX - Creep.shotAnim.x) * 100)+';0;0' }}" repeatCount='0'></animate>
+			<animate app-attr="calcMode#Creep.displayOptions.animations ? 'linear' : 'discrete'" attributeName='y2' attributeType='XML' keyTimes='0;0.6;1' ng:attr-dur='{{0.6 * 100 / Creep.speed}}s' ng:attr-values="{{ ((Creep.shotAnim.fromY - Creep.shotAnim.y) * 100)+';0;0' }}" repeatCount='0'></animate>
+		</line>
+	</svg>
+	<svg class='anim-mass-shot' height='16%' ng:if='Creep.massShotAnim' ng:style="{left: ((Creep.objectData.x-3.5)*100/50)+'%', top: ((Creep.objectData.y-3.5)*100/50)+'%'}" viewbox='0 0 800 800' width='16%'>
+		<ellipse cx='0' cy='0' fill='transparent' ng-if='!Creep.displayOptions.animations' opacity='0.3' rx='250' ry='250' stroke-width='200' stroke='#5d80b2' transform='translate(400,400)'>
+			<animate app-attr="calcMode#Creep.displayOptions.animations ? 'linear' : 'discrete'" attributeName='opacity' attributeType='XML' ng:attr-dur='{{0.4 * 100 / Creep.speed}}s' repeatCount='0' values='0.3;0'></animate>
+		</ellipse>
+		<ellipse cx='0' cy='0' fill='transparent' ng-if='Creep.displayOptions.animations' stroke='#5d80b2' transform='translate(400,400)'>
+			<animate attributeName='opacity' attributeType='XML' ng:attr-dur='{{0.4 * 100 / Creep.speed}}s' repeatCount='0' values='0.3;0'></animate>
+			<animate attributeName='stroke-width' attributeType='XML' ng:attr-dur='{{0.4 * 100 / Creep.speed}}s' repeatCount='0' values='30;200'></animate>
+			<animate attributeName='rx' attributeType='XML' ng:attr-dur='{{0.4 * 100 / Creep.speed}}s' repeatCount='0' values='0;300'></animate>
+			<animate attributeName='ry' attributeType='XML' ng:attr-dur='{{0.4 * 100 / Creep.speed}}s' repeatCount='0' values='0;300'></animate>
+		</ellipse>
+	</svg>
+	<svg class='anim-work' height='2%' ng:if='Creep.workAnim' ng:style="{left: ((Creep.workAnim.x)*100/50)+'%', top: ((Creep.workAnim.y)*100/50)+'%'}" viewbox='0 0 100 100' width='2%'>
+		<ellipse cx='50' cy='50' fill='#ffe56d' ng:attr-rx='{{Creep.workAnim.size}}' ng:attr-ry='{{Creep.workAnim.size}}' opacity='0'>
+			<animate app-attr="calcMode#Creep.displayOptions.animations ? 'linear' : 'discrete'" attributeName='opacity' attributeType='XML' begin='indefinite' keyTimes='0;0.25;1' ng:attr-dur='{{0.95 * 100 / Creep.speed}}s' repeatCount='0' values='0;0.3;0'></animate>
+		</ellipse>
+	</svg>
+</div>
