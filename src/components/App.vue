@@ -1,15 +1,31 @@
 <template>
 
   <div id="app">
-    <split-pane @resize="onResize()">
-      <game slot="left" :api="api" />
-      <div slot="right" style="height: 100%;">
-        <split-pane-vertical>
-          <div slot="left">&nbsp;</div>
-          <console slot="right" :api="api" />
-        </split-pane-vertical>
-      </div>
-    </split-pane>
+    <div id="topbar">
+      <label for="host">host:</label>
+      <input id="host" v-model="host" />
+      <label for="port">port:</label>
+      <input id="port" v-model="port" />
+      <label for="secure">secure:</label>
+      <input id="secure" v-model="secure" type="checkbox" />
+      <label for="email">email:</label>
+      <input id="email" v-model="email" />
+      <label for="password">password:</label>
+      <input id="password" v-model="password" type="password" />
+
+      <button @click="connect()">Connect</button>
+    </div>
+    <div id="main">
+      <split-pane @resize="onResize()">
+        <game slot="left" :api="api" />
+        <div slot="right" style="height: 100%;">
+          <split-pane-vertical>
+            <div slot="left">&nbsp;</div>
+            <console slot="right" :api="api" />
+          </split-pane-vertical>
+        </div>
+      </split-pane>
+    </div>
   </div>
 
 </template>
@@ -26,19 +42,28 @@ import { ScreepsAPI } from '../scripts/screepsAPI';
 export default {
   data() {
     return {
-      api:  new ScreepsAPI({
-        host: 'archcygnus',
-        port: 21025,
-        secure: false,
+      host: 'archcygnus',
+      port: 21025,
+      secure: false,
 
-        email: 'ricochet1k',
-        password: 'asdf',
-      })
+      email: 'ricochet1k',
+      password: 'asdf',
+
+      api: null,
     }
   },
 
-
   methods: {
+    connect() {
+      this.api = new ScreepsAPI({
+          host: this.host,
+          port: this.port,
+          secure: this.secure,
+
+          email: this.email,
+          password: this.password,
+        })
+    },
     onResize() {
       eventBus.$emit('resize');
     }
@@ -54,11 +79,29 @@ export default {
 </script>
 
 <style>
-html, body, #app {
+html, body {
   margin: 0;
   padding: 0;
   min-height: 100%;
   height: 100%;
+  position: relative;
+}
+
+#app {
+  flex-direction: column;
+  display: flex;
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  height: 100%;
+}
+
+#top {
+  /*height: 20px;*/
+}
+
+#main {
+  flex: 1;
 }
 
 </style>
