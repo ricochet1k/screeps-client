@@ -41,12 +41,12 @@ export default {
 
   methods: {
     connect(api) {
-        if (api)
-          api.on("message", this.onMessage);
+      if (api && api.on)
+        api.on("message", this.onMessage);
     },
 
     disconnect(api) {
-      if (api)
+      if (api && api.off)
         api.off("message", this.onMessage);
     },
 
