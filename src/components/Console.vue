@@ -18,8 +18,15 @@ export default {
     }
   },
 
+  watch: {
+    'api': function(api, oldApi) {
+      this.disconnect(oldApi);
+      this.connect(api);
+    }
+  },
+
   created() {
-    this.api.on("message", this.onMessage);
+    this.connect(this.api);
   },
 
   mounted() {
@@ -29,10 +36,20 @@ export default {
   },
 
   beforeDestroy() {
-    this.api.off("message", this.onMessage);
+    this.disconnect(this.api);
   },
 
   methods: {
+    connect(api) {
+        if (api)
+          api.on("message", this.onMessage);
+    },
+
+    disconnect(api) {
+      if (api)
+        api.off("message", this.onMessage);
+    },
+
     onMessage(msg) {
       if (msg[0].match(/\/console$/)) {
         // console.log('console!', msg[1]);

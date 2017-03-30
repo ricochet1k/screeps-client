@@ -14,33 +14,46 @@ export default {
   props: ['api'],
   data() {
     return {
-    	client: new ScreepsClient(this.api),
+    	client: undefined,
+    }
+  },
+
+  watch: {
+    'api': function() {
+      if (this.client) {
+        this.detatchClient();
+      }
+
+      if (this.api){
+        this.client = new ScreepsClient(this.api);
+        this.attachClient();
+      }
+      else
+        this.client = undefined;
     }
   },
 
   created() {
-  	this.client.connect();
+  	// this.client.connect();
   },
 
   mounted() {
-  	this.attachView();
-  	eventBus.$on('resize', this.resizeView);
+  	if (this.client)
+      this.attachView();
   },
 
   updated() {
-  	let view = this.client.renderer.view;
-  	if (view.parentElement !== this.$el) {
-  		view.parentElement.removeChild(view);
-	  	this.attachView();
-  	}
+    if (this.client) {
+    	let view = this.client.renderer.view;
+    	if (view.parentElement !== this.$el) {
+    		view.parentElement.removeChild(view);
+  	  	this.attachView();
+    	}
+    }
   },
 
   beforeDestroy() {
-  	let view = this.client.renderer.view;
-  	view.parentElement.removeChild(view);
-  	this.client.renderer.destroy();
-    this.client.disconnect();
-  	eventBus.$off('resize', this.resizeView);
+    this.detatchClient();
   },
 
   methods: {
@@ -51,7 +64,21 @@ export default {
 
   	resizeView() {
 	  	this.client.renderer.resize(this.$el.offsetWidth, this.$el.offsetHeight);
-  	}
+  	},
+
+    attachClient() {
+      eventBus.$on('resize', this.resizeView);
+      this.client.connect();
+      this.attachView();
+    },
+
+    detatchClient() {
+      let view = this.client.renderer.view;
+      view.parentElement.removeChild(view);
+      this.client.renderer.destroy();
+      this.client.disconnect();
+      eventBus.$off('resize', this.resizeView);
+    }
   }
 }
 </script>

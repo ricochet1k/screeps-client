@@ -42,7 +42,7 @@ export class ScreepsClient {
     this.screeps.on("message", this.onMessage);
 
 
-    this.startScreepsConn().catch(console.error);
+    this.startScreepsConn().catch(e => console.error('client.connect()', e));
   }
 
   disconnect() {
