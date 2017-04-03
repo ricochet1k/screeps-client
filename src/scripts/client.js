@@ -28,6 +28,8 @@ export class ScreepsClient {
     this.stage = new PIXI.Container();
 
     this.onMessage = this.onMessage.bind(this);
+
+    this.money = null;
   }
 
   connect() {
@@ -95,6 +97,10 @@ export class ScreepsClient {
       this.finishConnecting();
     } else if (msg[0].match(/^room:/) && this.room) {
       this.room.updateRoom(msg[1]);
+    } else if (msg[0].match(/user:\w+\/money$/)) {
+      this.money = msg[1];
+    } else if (msg[0].match(/user:\w+\/console$/)) {
+      // ignore
     } else {
       console.log("message", msg)
     }

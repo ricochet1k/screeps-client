@@ -52,9 +52,12 @@ export default {
 
     onMessage(msg) {
       if (msg[0].match(/\/console$/)) {
-        // console.log('console!', msg[1]);
-        const con = this.$refs.console;
-        let isAtBottom = con.scrollHeight - con.clientHeight <= con.scrollTop + 1;
+
+        const con = this.$refs && this.$refs.console;
+        let isAtBottom = false;
+        if (con) {
+          isAtBottom = con.scrollHeight - con.clientHeight <= con.scrollTop + 1;
+        }
         for (let m of msg[1].messages.log) {
           this.lines.push(m);
         }

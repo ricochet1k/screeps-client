@@ -7,29 +7,24 @@
 </template>
 
 <script>
-import {ScreepsClient} from '../scripts/client';
 import eventBus from '../global-events';
 
 export default {
-  props: ['api'],
+  props: ['client'],
   data() {
     return {
-    	client: undefined,
     }
   },
 
   watch: {
-    'api': function() {
-      if (this.client) {
-        this.detatchClient();
+    'client': function(client, oldClient) {
+      if (oldClient) {
+        this.detatchClient(oldClient);
       }
 
-      if (this.api){
-        this.client = new ScreepsClient(this.api);
-        this.attachClient();
+      if (client){
+        this.attachClient(client);
       }
-      else
-        this.client = undefined;
     }
   },
 
@@ -53,7 +48,8 @@ export default {
   },
 
   beforeDestroy() {
-    this.detatchClient();
+    if (this.client)
+      this.detatchClient(this.client);
   },
 
   methods: {
@@ -66,17 +62,17 @@ export default {
 	  	this.client.renderer.resize(this.$el.offsetWidth, this.$el.offsetHeight);
   	},
 
-    attachClient() {
+    attachClient(client) {
       eventBus.$on('resize', this.resizeView);
-      this.client.connect();
+      client.connect();
       this.attachView();
     },
 
-    detatchClient() {
-      let view = this.client.renderer.view;
+    detatchClient(client) {
+      let view = client.renderer.view;
       view.parentElement.removeChild(view);
-      this.client.renderer.destroy();
-      this.client.disconnect();
+      client.renderer.destroy();
+      client.disconnect();
       eventBus.$off('resize', this.resizeView);
     }
   }

@@ -55,6 +55,14 @@ export class CreepSkin {
 					actionLine(room, k, {x: obj.x, y: obj.y}, a);
 					break;
 
+				case 'attacked':
+					actionLine(room, k, a, {x: obj.x, y: obj.y});
+					break;
+
+				case 'rangedAttack':
+					actionLine(room, k, {x: obj.x, y: obj.y}, a);
+					break;
+
 				default:
 					console.log("actionLog", k, a, this);
 			}
@@ -71,27 +79,29 @@ export class CreepSkin {
 			bodyCount[part.type] = (bodyCount[part.type]||0) + 1;
 		}
 
-		let m = S(5);
-		let pw = S(2);
-		let pr = S(5);
+		let m = S(5); // middle
+		let pw = S(2); // part width/thickness
+		let pr = S(5);  // part outer radius
 
 		const tau = Math.PI * 2;
+		const pi = Math.PI;
 		const halfPartWidth = (tau / 50) / 2;
 
 		g.lineStyle(0, 0, 0);
-		
 		g.beginFill(0x8888ff);
 		const moveAL = (bodyCount.move || 0) * halfPartWidth;
-		g.arc(m, m, pr, tau / 2 - moveAL, tau / 2 + moveAL, false);
-		g.arc(m, m, pr-pw, tau / 2 + moveAL, tau / 2 - moveAL, true);
+		g.arc(m, m, pr, pi - moveAL, pi + moveAL, false);
+		g.arc(m, m, pr-pw, pi + moveAL, pi - moveAL, true);
 		g.endFill();
 
+		g.lineStyle(0, 0, 0);
 		g.beginFill(0xffff00);
 		const workAL = (bodyCount.work || 0) * halfPartWidth;
 		g.arc(m, m, pr, -workAL, +workAL, false);
 		g.arc(m, m, pr-pw, +workAL, -workAL, true);
 		g.endFill();
 
+		g.lineStyle(0, 0, 0);
 		g.beginFill(0xffff00);
 		g.drawCircle(S(5), S(5), S(2.5) * obj.energy / obj.energyCapacity);
 		g.endFill();
@@ -101,7 +111,7 @@ export class CreepSkin {
 
 	rotation(g, from, to) {
 		if (from.x !== to.x || from.y !== to.y) {
-			let oldRot = g.rotation;
+			let oldRot = g.rotation % (Math.PI * 2);
 			let newRot = Math.atan2(to.y - from.y, to.x - from.x);
 			let diff = Math.abs(oldRot - newRot);
 			if (diff > Math.PI) {
@@ -129,10 +139,12 @@ function actionLine(room, action, from, to) {
 	let g = new PIXI.Graphics();
 	room.g.addChild(g);
 
-	let fx = (from.x + 0.5) * SQUARE_SIZE;
-	let fy = (from.y + 0.5) * SQUARE_SIZE;
-	let tx = (to.x + 0.5) * SQUARE_SIZE;
-	let ty = (to.y + 0.5) * SQUARE_SIZE;
+	const color = 0xffff00;
+
+	const fx = (from.x + 0.5) * SQUARE_SIZE;
+	const fy = (from.y + 0.5) * SQUARE_SIZE;
+	const tx = (to.x + 0.5) * SQUARE_SIZE;
+	const ty = (to.y + 0.5) * SQUARE_SIZE;
 
 	// console.log('actionLine', fx, fy, tx, ty);
 
@@ -143,7 +155,7 @@ function actionLine(room, action, from, to) {
 		}
 
 		g.clear();
-		g.lineStyle(3, 0xffff00, 1);
+		g.lineStyle(3, color, 1);
 
 		if (v < 0.5) {
 			v = v * 2;

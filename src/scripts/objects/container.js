@@ -14,7 +14,7 @@ export default class Container extends GameObject {
 		let g = this.g;
 
 		let m = S(5);
-		let w = S(2.5);
+		let w = S(2.4);
 		let h = S(6);
 		let hy = (S(10)-h)/2;
 
@@ -26,7 +26,7 @@ export default class Container extends GameObject {
 		g.lineStyle(0, 0, 0);
 		g.beginFill(0xffff00);
 		let height = (h-2) * obj.energy / obj.energyCapacity;
-		g.drawRect(m-w, h+hy - height-1, 2*w-1, height);
+		g.drawRect(m-w+0.5, h+hy - height-1, 2*w-1, height);
 		g.endFill();
 	}
 }
