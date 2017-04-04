@@ -1,6 +1,7 @@
 import GameObject from './gameObject';
 import {S, TWEEN_DURATION} from '../const';
 import {tween, interp} from '../tween';
+import {actionLine} from '../actions';
 
 export default class Tower extends GameObject {
 	constructor(obj) {
@@ -17,6 +18,30 @@ export default class Tower extends GameObject {
 
 	update(dobj, room) {
 		let obj = super.update(dobj, room);
+
+
+		for (let k in obj.actionLog) {
+			let a = obj.actionLog[k];
+			if (!a) continue;
+
+			this.rotation(g, obj, dobj.actionLog[k]);
+			this.freeze = 2;
+
+			switch (k) {
+				case 'repair':
+				case 'build':
+					actionLine(room, k, {x: obj.x, y: obj.y}, a);
+					break;
+
+				case 'attack':
+					actionLine(room, k, {x: obj.x, y: obj.y}, a);
+					break;
+
+				default:
+					console.log("tower actionLog", k, a, this);
+			}
+		}
+
 
 		let g = this.graphics;
 
@@ -53,12 +78,6 @@ export default class Tower extends GameObject {
 		g.beginFill(0x888888);
 		g.drawRoundedRect(m-tw, y-th, 2*tw, th, rr);
 		g.endFill();
-
-		console.log('tower:', obj);
-		if (dobj.actionLog && dobj.actionLog.attack) {
-			this.rotation(g, obj, dobj.actionLog.attack);
-			this.freeze = 2;
-		}
 	}
 
 

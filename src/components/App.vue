@@ -132,6 +132,7 @@ html, body {
 
 #main-td {
   position: relative;
+  height: 100%;
 }
 
 #main {
