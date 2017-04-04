@@ -42,7 +42,7 @@ export default {
         e.preventDefault();
         const dx = e.pageY - this.startY
         const totalHeight = this.$el.offsetHeight
-        let split = this.startSplit + ~~(dx / totalHeight * 100)
+        let split = this.startSplit + (dx / totalHeight * 100)
         this.split = Math.max(10, Math.min(90, split));
         this.$emit('resize');
       }

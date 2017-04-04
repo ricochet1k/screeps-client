@@ -42,7 +42,7 @@ export default {
         e.preventDefault();
         const dx = e.pageX - this.startX
         const totalWidth = this.$el.offsetWidth
-        let split = this.startSplit + ~~(dx / totalWidth * 100)
+        let split = this.startSplit + (dx / totalWidth * 100)
         this.split = Math.max(10, Math.min(90, split));
         this.$emit('resize');
       }
