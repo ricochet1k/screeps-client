@@ -24,11 +24,12 @@
             <span>Credits: {{money}}</span>
             <span>CPU: {{cpu}}</span>
             <span>Memory: {{memory}}</span>
-            <select value="roomName" @input="client.setRoom($event.target.value)">
+            <select :value="roomName" @input="client.setRoom($event.target.value)">
               <option v-for="roomName in rooms" :key="roomName" :value="roomName">
                 {{ roomName }}
               </option>
             </select>
+            <input id="room" :value="roomName" @change="client.setRoom($event.target.value)" />
           </div>
         </div>
       </td></tr>
