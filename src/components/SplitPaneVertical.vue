@@ -32,12 +32,14 @@ export default {
   },
   methods: {
     dragStart (e) {
+      e.preventDefault();
       this.dragging = true
       this.startY = e.pageY
       this.startSplit = this.split
     },
     dragMove (e) {
       if (this.dragging) {
+        e.preventDefault();
         const dx = e.pageY - this.startY
         const totalHeight = this.$el.offsetHeight
         let split = this.startSplit + ~~(dx / totalHeight * 100)
