@@ -19,31 +19,30 @@ export default class Tower extends GameObject {
 	update(dobj, room) {
 		let obj = super.update(dobj, room);
 
+		let g = this.graphics;
 
-		for (let k in obj.actionLog) {
-			let a = obj.actionLog[k];
-			if (!a) continue;
+		if (dobj.actionLog) {
+			for (let k in dobj.actionLog) {
+				let a = dobj.actionLog[k];
+				if (!a) continue;
 
-			this.rotation(g, obj, dobj.actionLog[k]);
-			this.freeze = 2;
+				this.rotation(g, obj, dobj.actionLog[k]);
+				this.freeze = 2;
 
-			switch (k) {
-				case 'repair':
-				case 'build':
-					actionLine(room, k, {x: obj.x, y: obj.y}, a);
-					break;
+				switch (k) {
+					case 'repair':
+					case 'build':
+					case 'attack':
+						actionLine(room, k, {x: obj.x, y: obj.y}, a);
+						break;
 
-				case 'attack':
-					actionLine(room, k, {x: obj.x, y: obj.y}, a);
-					break;
-
-				default:
-					console.log("tower actionLog", k, a, this);
+					default:
+						console.log("tower actionLog", k, a, this);
+				}
 			}
 		}
 
 
-		let g = this.graphics;
 
 		const m = S(5); // middle
 		const r = S(7); // radius
