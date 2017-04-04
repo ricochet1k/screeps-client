@@ -58,8 +58,14 @@ export default {
         if (con) {
           isAtBottom = con.scrollHeight - con.clientHeight <= con.scrollTop + 1;
         }
-        for (let m of msg[1].messages.log) {
-          this.lines.push(m);
+        if (msg[1].messages && msg[1].messages.log) {
+          for (let m of msg[1].messages.log) {
+            this.lines.push(m);
+          }
+        } else if (msg[1].error) {
+          this.lines.push(msg[1].error);
+        } else {
+          console.log('wierd console', msg[1]);
         }
 
         if (isAtBottom)
