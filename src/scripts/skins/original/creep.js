@@ -1,7 +1,7 @@
 
 import {S, SQUARE_SIZE, TWEEN_DURATION} from '../../const';
-import {tween, interp} from '../../tween';
-import {actionLine} from '../../actions';
+import {tween, tweenRotation, interp} from '../../tween';
+import {actionLine, bump} from '../../actions';
 
 export class CreepSkin {
 	constructor(creep) {
@@ -34,17 +34,8 @@ export class CreepSkin {
 
 			switch (k) {
 				case 'harvest':
-					let {x, y} = this.creep.obj;
-					this.rotation(g, obj, a);
-					tween(TWEEN_DURATION, this, v => {
-						if (v < 0.5) {
-							v = v;
-						} else {
-							v = (1 - v);
-						}
-						this.g.x = SQUARE_SIZE * interp(x, a.x, v);
-						this.g.y = SQUARE_SIZE * interp(y, a.y, v);
-					});
+					bump(g, obj, a);
+					
 					break;
 
 				case 'say':
@@ -107,28 +98,7 @@ export class CreepSkin {
 		g.drawCircle(S(5), S(5), S(2.5) * obj.energy / obj.energyCapacity);
 		g.endFill();
 
-		this.rotation(g, this.creep.lastObj, obj);
-	}
-
-	rotation(g, from, to) {
-		if (from.x !== to.x || from.y !== to.y) {
-			let oldRot = g.rotation % (Math.PI * 2);
-			let newRot = Math.atan2(to.y - from.y, to.x - from.x);
-			let diff = Math.abs(oldRot - newRot);
-			if (diff > Math.PI) {
-				// console.log('large rot', diff, oldRot, newRot);
-				const PI = Math.PI;
-				const PI2 = PI * 2;
-				if (oldRot < 0) oldRot += PI2;
-				else oldRot -= PI2;
-				let diff2 = Math.abs(oldRot - newRot);
-				// console.log('large rot2', diff2, oldRot, newRot);
-			}
-			if (oldRot !== newRot) {
-				tween(TWEEN_DURATION/2, this, v => g.rotation = v,
-					oldRot, newRot);
-			}
-		}
+		tweenRotation(TWEEN_DURATION/2, g, this.creep.lastObj, obj);
 	}
 
 	preRender(timestamp) {

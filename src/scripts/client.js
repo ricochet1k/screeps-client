@@ -109,11 +109,13 @@ export class ScreepsClient {
       this.finishConnecting();
     } else if (msg[0].match(/^room:/) && this.room) {
       this.room.updateRoom(msg[1]);
-    } else if (msg[0].match(/user:\w+\/money$/)) {
+    } else if (msg[0].match(/^user:\w+\/money$/)) {
       this.money = msg[1];
-    } else if (msg[0].match(/user:\w+\/cpu$/)) {
+    } else if (msg[0].match(/^user:\w+\/cpu$/)) {
       this.cpuMemory = msg[1];
-    } else if (msg[0].match(/user:\w+\/console$/)) {
+    } else if (msg[0].match(/^user:\w+\/console$/)) {
+      // ignore
+    } else if (msg[0].match(/^roomMap2:/)) {
       // ignore
     } else {
       console.log("message", msg)

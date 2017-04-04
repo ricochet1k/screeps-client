@@ -1,6 +1,6 @@
 import GameObject from './gameObject';
 import {S, TWEEN_DURATION} from '../const';
-import {tween, interp} from '../tween';
+import {tween, tweenRotation, interp} from '../tween';
 import {actionLine} from '../actions';
 
 export default class Tower extends GameObject {
@@ -26,7 +26,7 @@ export default class Tower extends GameObject {
 				let a = obj.actionLog[k];
 				if (!a) continue;
 
-				this.rotation(g, obj, obj.actionLog[k]);
+				tweenRotation(TWEEN_DURATION/2, g, obj, obj.actionLog[k], Math.PI * 0.5);
 				this.freeze = 2;
 
 				switch (k) {
@@ -80,25 +80,7 @@ export default class Tower extends GameObject {
 	}
 
 
-	rotation(g, from, to) {
-		if (from.x !== to.x || from.y !== to.y) {
-			let oldRot = g.rotation % (Math.PI * 2);
-			if (oldRot > Math.PI) oldRot = oldRot - Math.PI * 2;
-			let newRot = Math.atan2(to.y - from.y, to.x - from.x) + Math.PI * 0.5;
-			let diff = Math.abs(oldRot - newRot);
-			if (diff > Math.PI) {
-				const PI = Math.PI;
-				const PI2 = PI * 2;
-				if (oldRot < 0) oldRot += PI2;
-				else oldRot -= PI2;
-				// let diff2 = Math.abs(oldRot - newRot);
-			}
-			if (oldRot !== newRot) {
-				tween(TWEEN_DURATION/2, this, v => g.rotation = v,
-					oldRot, newRot);
-			}
-		}
-	}
+	
 
 	preRender(ts) {
 		super.preRender(ts);

@@ -1,5 +1,5 @@
 import {SQUARE_SIZE, TWEEN_DURATION} from './const';
-import {tween, interp} from './tween';
+import {tween, tweenRotation, interp} from './tween';
 
 export function actionLine(room, action, from, to) {
 	let g = new PIXI.Graphics();
@@ -32,5 +32,19 @@ export function actionLine(room, action, from, to) {
 			g.moveTo(fx + (tx-fx)*v, fy + (ty-fy)*v);
 			g.lineTo(tx, ty);
 		}
+	});
+}
+
+export function bump(g, obj, a) {
+	let {x, y} = obj;
+	tweenRotation(TWEEN_DURATION/2, g, obj, a);
+	tween(TWEEN_DURATION, g, v => {
+		if (v < 0.5) {
+			v = v;
+		} else {
+			v = (1 - v);
+		}
+		g.x = SQUARE_SIZE * interp(x, a.x, v);
+		g.y = SQUARE_SIZE * interp(y, a.y, v);
 	});
 }

@@ -11,6 +11,7 @@ import mineral from './mineral';
 import container from './container';
 import rampart from './rampart';
 import storage from './storage';
+import constructedWall from './constructedWall';
 import unknown from './unknown';
 
 export default {
@@ -26,5 +27,6 @@ export default {
 	container,
 	rampart,
 	storage,
+	constructedWall,
 	unknown,
 }

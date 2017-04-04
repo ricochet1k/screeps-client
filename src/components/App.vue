@@ -25,7 +25,7 @@
             <span>CPU: {{cpu}}</span>
             <span>Memory: {{memory}}</span>
             <select value="roomName" @input="client.setRoom($event.target.value)">
-              <option v-for="roomName in rooms" v-bind:value="roomName">
+              <option v-for="roomName in rooms" :key="roomName" :value="roomName">
                 {{ roomName }}
               </option>
             </select>
@@ -35,7 +35,12 @@
       <tr><td id="main-td">
         <div id="main">
           <split-pane @resize="onResize()">
-            <game slot="left" :client="client"></game>
+            <div slot="left" style="height: 100%;">
+              <div id="roomMaps">
+                <room-map v-for="roomName in rooms" :key="roomName" :room-name="roomName" :api="api" @click="client.setRoom(roomName)"></room-map>
+              </div>
+              <game :client="client"></game>
+            </div>
             <div slot="right" style="height: 100%;">
               <split-pane-vertical>
                 <div slot="left">&nbsp;</div>
@@ -56,6 +61,7 @@ import SplitPane from './SplitPane.vue';
 import SplitPaneVertical from './SplitPaneVertical.vue';
 import Game from './Game.vue';
 import Console from './Console.vue';
+import RoomMap from './RoomMap.vue';
 import eventBus from '../global-events';
 import { ScreepsAPI } from '../scripts/screepsAPI';
 import {ScreepsClient} from '../scripts/client';
@@ -119,6 +125,7 @@ export default {
     Console,
     SplitPane,
     SplitPaneVertical,
+    RoomMap,
   },
 }
 </script>
@@ -161,6 +168,15 @@ html, body {
   left: 0;
   bottom: 0;
   right: 0;
+}
+
+#roomMaps {
+  flex-direction: row;
+  display: flex;
+  height: calc(150px + 1em + 4px + 1em); /* scrollbar */
+  background: black;
+  overflow-y: hidden;
+  overflow-x: scroll;
 }
 
 </style>

@@ -18,6 +18,7 @@ export class Room {
 
     let layers = [
       'road', 
+      'constructedWall', 
       'container', 
       'energy', 
       'extension', 

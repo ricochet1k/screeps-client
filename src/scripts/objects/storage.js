@@ -41,7 +41,7 @@ export default class Storage extends GameObject {
 		g.lineStyle(0, 0, 0);
 		g.beginFill(0xffff00);
 		let height = (h-2) * obj.energy / obj.energyCapacity;
-		g.drawRect(m-w, h+hy - height-1, 2*w-1, height);
+		g.drawRect(m-w+0.5, h+hy - height-1, 2*w-1, height);
 		g.endFill();
 	}
 }
