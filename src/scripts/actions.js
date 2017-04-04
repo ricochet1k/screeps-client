@@ -35,9 +35,9 @@ export function actionLine(room, action, from, to) {
 	});
 }
 
-export function bump(g, obj, a) {
+export function bump(g, gRot, obj, a) {
 	let {x, y} = obj;
-	tweenRotation(TWEEN_DURATION/2, g, obj, a);
+	tweenRotation(TWEEN_DURATION/2, gRot, obj, a);
 	tween(TWEEN_DURATION, g, v => {
 		if (v < 0.5) {
 			v = v;

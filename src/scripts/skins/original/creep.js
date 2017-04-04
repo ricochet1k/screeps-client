@@ -34,8 +34,7 @@ export class CreepSkin {
 
 			switch (k) {
 				case 'harvest':
-					bump(g, obj, a);
-					
+					bump(this.g, g, obj, a);
 					break;
 
 				case 'say':
