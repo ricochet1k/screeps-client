@@ -1,6 +1,6 @@
 <template>
 
-  <div class="console" ref="console" style="height: 100%;">
+  <div class="console" ref="consoleWrapper" style="height: 100%;">
     <div class="console-line" v-for="line in lines" v-html="line">
     </div>
   </div>
@@ -53,7 +53,7 @@ export default {
     onMessage(msg) {
       if (msg[0].match(/\/console$/)) {
 
-        const con = this.$refs && this.$refs.console;
+        const con = this.$refs && this.$refs.consoleWrapper;
         let isAtBottom = false;
         if (con) {
           isAtBottom = con.scrollHeight - con.clientHeight <= con.scrollTop + 1;

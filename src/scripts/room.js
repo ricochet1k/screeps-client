@@ -43,7 +43,10 @@ export class Room {
 
     
     screeps.roomTerrain(name, true).then(t =>{
-      console.log("terrain", t);
+      console.log("terrain", name, t);
+      if (t.error) {
+        console.log("terrain error", t.error, name);
+      }
       renderTerrain(this.terrainG, t.terrain[0].terrain);
     });
   }

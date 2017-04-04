@@ -30,6 +30,10 @@ export class ScreepsClient {
     this.onMessage = this.onMessage.bind(this);
 
     this.money = null;
+    this.cpuMemory = {cpu: 0, memory: 0};
+
+    this.roomName = "";
+    this.rooms = [];
   }
 
   connect() {
@@ -77,17 +81,25 @@ export class ScreepsClient {
     screeps.subscribe(`user:${me._id}/code`);
 
     let {rooms} = await screeps.rooms();
+    this.rooms = rooms;
     console.log(rooms);
 
-
-    this.room = new Room(screeps, rooms[0]);
-    this.stage.addChild(this.room.g);
-
-    screeps.unsubscribe(`room:${rooms[0]}`);
-    screeps.subscribe(`room:${rooms[0]}`);
-
+    this.setRoom(rooms[0]);
 
     requestAnimationFrame(ts => { this.gameLoop(ts); });
+  }
+
+  setRoom(roomName) {
+    this.roomName = roomName;
+    if (this.room){
+      this.screeps.unsubscribe(`room:${this.room.name}`);
+      this.stage.removeChild(this.room.g);
+    }
+
+    this.screeps.unsubscribe(`room:${roomName}`);
+    this.screeps.subscribe(`room:${roomName}`);
+    this.room = new Room(this.screeps, roomName);
+    this.stage.addChild(this.room.g);
   }
 
 
@@ -99,6 +111,8 @@ export class ScreepsClient {
       this.room.updateRoom(msg[1]);
     } else if (msg[0].match(/user:\w+\/money$/)) {
       this.money = msg[1];
+    } else if (msg[0].match(/user:\w+\/cpu$/)) {
+      this.cpuMemory = msg[1];
     } else if (msg[0].match(/user:\w+\/console$/)) {
       // ignore
     } else {

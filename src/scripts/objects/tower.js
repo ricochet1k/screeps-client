@@ -21,12 +21,12 @@ export default class Tower extends GameObject {
 
 		let g = this.graphics;
 
-		if (dobj.actionLog) {
-			for (let k in dobj.actionLog) {
-				let a = dobj.actionLog[k];
+		if (obj.actionLog) {
+			for (let k in obj.actionLog) {
+				let a = obj.actionLog[k];
 				if (!a) continue;
 
-				this.rotation(g, obj, dobj.actionLog[k]);
+				this.rotation(g, obj, obj.actionLog[k]);
 				this.freeze = 2;
 
 				switch (k) {

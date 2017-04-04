@@ -21,7 +21,14 @@
             </form>
           </div>
           <div>
-            Money: {{money}}
+            <span>Credits: {{money}}</span>
+            <span>CPU: {{cpu}}</span>
+            <span>Memory: {{memory}}</span>
+            <select value="roomName" @input="client.setRoom($event.target.value)">
+              <option v-for="roomName in rooms" v-bind:value="roomName">
+                {{ roomName }}
+              </option>
+            </select>
           </div>
         </div>
       </td></tr>
@@ -74,7 +81,19 @@ export default {
 
   computed: {
     money() {
-      return this.client? this.client.money : 0;
+      return this.client && this.client.money || 0;
+    },
+    cpu() {
+      return this.client && this.client.cpuMemory? this.client.cpuMemory.cpu : 0;
+    },
+    memory() {
+      return this.client && this.client.cpuMemory? this.client.cpuMemory.memory : 0;
+    },
+    roomName() {
+      return this.client && this.client.roomName || "";
+    },
+    rooms() {
+      return this.client && this.client.rooms || [];
     }
   },
 
