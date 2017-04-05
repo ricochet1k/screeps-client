@@ -39,7 +39,7 @@ export default {
 
   updated() {
     if (this.client) {
-    	let view = this.client.renderer.view;
+    	let view = this.client._renderer.view;
     	if (view.parentElement !== this.$el) {
     		view.parentElement.removeChild(view);
   	  	this.attachView();
@@ -54,12 +54,12 @@ export default {
 
   methods: {
   	attachView() {
-	  	this.$el.appendChild(this.client.renderer.view);
+	  	this.$el.appendChild(this.client._renderer.view);
 	  	this.resizeView();
   	},
 
   	resizeView() {
-	  	this.client.renderer.resize(this.$el.offsetWidth, this.$el.offsetHeight);
+	  	this.client._renderer.resize(this.$el.offsetWidth, this.$el.offsetHeight);
   	},
 
     attachClient(client) {
@@ -69,9 +69,9 @@ export default {
     },
 
     detatchClient(client) {
-      let view = client.renderer.view;
+      let view = client._renderer.view;
       view.parentElement.removeChild(view);
-      client.renderer.destroy();
+      client._renderer.destroy();
       client.disconnect();
       eventBus.$off('resize', this.resizeView);
     }

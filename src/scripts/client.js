@@ -15,7 +15,7 @@ PIXI.utils.sayHello(type);
 export class ScreepsClient {
   constructor(screeps) {
     this.screeps = screeps;
-    let renderer = this.renderer = PIXI.autoDetectRenderer(256, 256, {antialias: true});
+    let renderer = this._renderer = PIXI.autoDetectRenderer(256, 256, {antialias: true});
 
     // renderer.view.style.position = "absolute";
     renderer.view.style.display = "block";
@@ -25,7 +25,7 @@ export class ScreepsClient {
 
     // document.body.appendChild(renderer.view);
 
-    this.stage = new PIXI.Container();
+    this._stage = new PIXI.Container();
 
     this.onMessage = this.onMessage.bind(this);
 
@@ -93,13 +93,13 @@ export class ScreepsClient {
     this.roomName = roomName;
     if (this.room){
       this.screeps.unsubscribe(`room:${this.room.name}`);
-      this.stage.removeChild(this.room.g);
+      this._stage.removeChild(this.room.g);
     }
 
     this.screeps.unsubscribe(`room:${roomName}`);
     this.screeps.subscribe(`room:${roomName}`);
     this.room = new Room(this.screeps, roomName);
-    this.stage.addChild(this.room.g);
+    this._stage.addChild(this.room.g);
   }
 
 
@@ -132,7 +132,7 @@ export class ScreepsClient {
 
     tween.update(timestamp);
 
-    this.renderer.render(this.stage);
+    this._renderer.render(this._stage);
   }
   // requestAnimationFrame(ts => { lastTimestamp = ts; gameLoop(ts); });
 
