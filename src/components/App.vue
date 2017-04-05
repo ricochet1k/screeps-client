@@ -69,13 +69,40 @@ import {ScreepsClient} from '../scripts/client';
 
 export default {
   data() {
-    return {
-      host: 'screeps-test.ags131.ovh',//window.location.hostname,
-      port: 21025,
-      secure: false,
+    let host;
+    let secure;
+    let port;
+    let email = '';
+    let password = '';
 
-      email: 'ricochet1k',
-      password: 'asdf',
+    let saved = window.localStorage.getItem('saved-credentials');
+    if (saved) saved = JSON.parse(saved);
+
+    if (saved) {
+      host = saved.host;
+      port = saved.port;
+      secure = saved.secure;
+      email = saved.email;
+      password = saved.password;
+    } else {
+      host = window.location.hostname;
+      secure = window.location.protocol === 'https:';
+      port = window.location.port || (secure? '443' : '21025');
+
+      if (window.location.hostname === "localhost") {
+        host = 'screeps-test.ags131.ovh';
+        port = 21025;
+        secure = false;
+      }
+    }
+
+    return {
+      host,
+      port,
+      secure,
+
+      email,
+      password,
 
       api: null,
       client: null,
@@ -106,6 +133,15 @@ export default {
 
   methods: {
     connect() {
+      window.localStorage.setItem("saved-credentials", JSON.stringify({
+        host: this.host,
+        port: this.port,
+        secure: this.secure,
+
+        email: this.email,
+        password: this.password,
+      }))
+
       this.api = new ScreepsAPI({
           host: this.host,
           port: this.port,
