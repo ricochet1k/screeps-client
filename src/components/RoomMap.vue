@@ -54,8 +54,9 @@ export default {
 			// console.log('background', this, this.api, this.roomName);
 			if (!this.api) return "";
 
-			const {host, port} = this.api.opts;
-			let bg = `//${host}:${port}/assets/map/${this.roomName}.png`;
+			const {host, port, secure} = this.api.opts;
+			const proto = (secure? 'https' : 'http')
+			let bg = `${proto}://${host}:${port}/assets/map/${this.roomName}.png`;
 			// console.log('bg ', bg);
 			return bg;
 		},
