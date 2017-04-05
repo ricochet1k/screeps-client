@@ -13,7 +13,7 @@ export default class Creep extends GameObject {
 		if (!firstCreep) firstCreep = this;
 
 		let parts = this.parts = {};
-		for (let i = 0; i < obj.body.length; i++) {
+		for (let i in obj.body) {
 			let b = obj.body[i];
 
 			parts[b.type] = (parts[b.type] || 0) + 1;

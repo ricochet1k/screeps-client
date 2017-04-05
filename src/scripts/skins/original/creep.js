@@ -70,9 +70,9 @@ export class CreepSkin {
 			bodyCount[part.type] = (bodyCount[part.type]||0) + 1;
 		}
 
-		let m = S(5); // middle
-		let pw = S(2); // part width/thickness
-		let pr = S(5);  // part outer radius
+		const m = S(5); // middle
+		const pw = S(2); // part width/thickness
+		const pr = S(5);  // part outer radius
 
 		const tau = Math.PI * 2;
 		const pi = Math.PI;
@@ -94,7 +94,9 @@ export class CreepSkin {
 
 		g.lineStyle(0, 0, 0);
 		g.beginFill(0xffff00);
-		g.drawCircle(S(5), S(5), S(2.5) * obj.energy / obj.energyCapacity);
+		let e = S(2.5) * Math.sqrt(obj.energy / obj.energyCapacity);
+		if (obj.energy > 0) e = Math.max(1, e);
+		g.drawCircle(m, m, e);
 		g.endFill();
 
 		tweenRotation(TWEEN_DURATION/2, g, this.creep.lastObj, obj);
