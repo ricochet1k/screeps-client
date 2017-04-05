@@ -12,10 +12,20 @@ if(!PIXI.utils.isWebGLSupported()){
 
 PIXI.utils.sayHello(type);
 
+/*
+  Vue likes to observe anything that get stored in its instances,
+  transitively all the way down. This has a bad effect on PIXI's 
+  rendering speed, so we use Symbols to store the data instead,
+  which Vue doesn't observe.
+*/
+export const ROOM = Symbol('ROOM');
+export const RENDERER = Symbol('RENDERER');
+export const STAGE = Symbol('STAGE');
+
 export class ScreepsClient {
   constructor(screeps) {
     this.screeps = screeps;
-    let renderer = this._renderer = PIXI.autoDetectRenderer(256, 256, {antialias: true});
+    let renderer = this[RENDERER] = PIXI.autoDetectRenderer(256, 256, {antialias: true});
 
     // renderer.view.style.position = "absolute";
     renderer.view.style.display = "block";
@@ -25,7 +35,7 @@ export class ScreepsClient {
 
     // document.body.appendChild(renderer.view);
 
-    this._stage = new PIXI.Container();
+    this[STAGE] = new PIXI.Container();
 
     this.onMessage = this.onMessage.bind(this);
 
@@ -91,15 +101,15 @@ export class ScreepsClient {
 
   setRoom(roomName) {
     this.roomName = roomName;
-    if (this.room){
-      this.screeps.unsubscribe(`room:${this.room.name}`);
-      this._stage.removeChild(this.room.g);
+    if (this[ROOM]){
+      this.screeps.unsubscribe(`room:${this[ROOM].name}`);
+      this[STAGE].removeChild(this[ROOM].g);
     }
 
     this.screeps.unsubscribe(`room:${roomName}`);
     this.screeps.subscribe(`room:${roomName}`);
-    this.room = new Room(this.screeps, roomName);
-    this._stage.addChild(this.room.g);
+    this[ROOM] = new Room(this.screeps, roomName);
+    this[STAGE].addChild(this[ROOM].g);
   }
 
 
@@ -107,8 +117,8 @@ export class ScreepsClient {
     if (typeof msg === "string" && msg.match(/^auth/)) {
       console.log("AUTH", msg);
       this.finishConnecting();
-    } else if (msg[0].match(/^room:/) && this.room) {
-      this.room.updateRoom(msg[1]);
+    } else if (msg[0].match(/^room:/) && this[ROOM]) {
+      this[ROOM].updateRoom(msg[1]);
     } else if (msg[0].match(/^user:\w+\/money$/)) {
       this.money = msg[1];
     } else if (msg[0].match(/^user:\w+\/cpu$/)) {
@@ -128,14 +138,21 @@ export class ScreepsClient {
     // console.log('render', timestamp);
     if (this.render) requestAnimationFrame(ts => this.gameLoop(ts));
 
-    if (this.room) this.room.preRender(timestamp);
+    if (this[ROOM]) this[ROOM].preRender(timestamp);
 
     tween.update(timestamp);
 
-    this._renderer.render(this._stage);
+    this[RENDERER].render(this[STAGE]);
   }
   // requestAnimationFrame(ts => { lastTimestamp = ts; gameLoop(ts); });
 
+  resize(...args) {
+    return this[RENDERER].resize(...args);
+  }
+
+  get view() {
+    return this[RENDERER].view;
+  }
 }
 
 
