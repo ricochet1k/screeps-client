@@ -55,6 +55,12 @@ export class ScreepsAPI extends EventEmitter {
     console.log('connect')
     return this.getToken()
   }
+  disconnect() {
+    if (this.ws) {
+      this.ws.close();
+      this.ws = null;
+    }
+  }
   auth(email, password) {
     this.email = email
     this.password = password
@@ -143,6 +149,10 @@ export class ScreepsAPI extends EventEmitter {
 
   wssend(...data) {
     // console.log('ws', ...data)
+    if (!this.ws) {
+      console.log("cannot send", data);
+      return;
+    }
     this.ws.send(...data)
   }
 

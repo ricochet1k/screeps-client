@@ -133,6 +133,9 @@ export default {
 
   methods: {
     connect() {
+      if (this.api) this.api.disconnect();
+      if (this.client) this.client.disconnect();
+
       window.localStorage.setItem("saved-credentials", JSON.stringify({
         host: this.host,
         port: this.port,
