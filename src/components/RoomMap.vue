@@ -55,6 +55,10 @@ export default {
 			if (!this.api) return "";
 
 			const {host, port, secure} = this.api.opts;
+
+			if (host === "screeps.com") // official server uses a CDN
+				return `https://d3os7yery2usni.cloudfront.net/map3/${this.roomName}.png`;
+
 			const proto = (secure? 'https' : 'http')
 			let bg = `${proto}://${host}:${port}/assets/map/${this.roomName}.png`;
 			// console.log('bg ', bg);
