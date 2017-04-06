@@ -112,7 +112,7 @@ export class Room {
 
       switch (v.t) {
         case 't': // text
-          alpha = def(v.s.opacity, 0.5);
+          alpha = def(v.s.opacity, 1);
           let textStyle = new PIXI.TextStyle();
           textStyle.fill = parseColor(def(v.s.color, '#ffffff'));
           textStyle.stroke = v.s.stroke? parseColor(v.s.stroke) : undefined;
@@ -139,7 +139,7 @@ export class Room {
           //   def({baseline: 1, middle: 0.5}[baseline], 0), textStyle.align, baseline);
 
           if (background !== undefined) {
-            let padding = def(v.s.backgroundPadding, 0.15);
+            let padding = def(v.s.backgroundPadding, 0.3);
             let bg = new PIXI.Graphics();
             bg.beginFill(background);
             bg.drawRoundedRect(-padding, -padding, text.width+2*padding, text.height+2*padding, 0.1);
