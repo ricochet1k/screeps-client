@@ -120,6 +120,7 @@ export default {
           password: this.password,
         })
       eventBus.client = new ScreepsClient(eventBus.api);
+      eventBus.client.connect();
     }
   },
 
