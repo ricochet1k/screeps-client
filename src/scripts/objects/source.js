@@ -18,7 +18,9 @@ export default class Source extends GameObject {
 		g.drawCircle(S(5), S(5), S(5));
 
 		g.beginFill(0xffff00);
-		g.drawCircle(S(5), S(5), S(5) * Math.ceil(obj.energy / obj.energyCapacity));
+		let e = S(5) * Math.sqrt(obj.energy / obj.energyCapacity);
+		if (e > 0) e = Math.max(1, e);
+		g.drawCircle(S(5), S(5), e);
 		g.endFill();
 	}
 }

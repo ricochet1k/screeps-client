@@ -19,7 +19,9 @@ export default class Extension extends GameObject {
 
 		g.lineStyle(0, 0, 0);
 		g.beginFill(0xffff00);
-		g.drawCircle(S(5), S(5), (S(4) - 2) * obj.energy / obj.energyCapacity);
+		let e = (S(4) - 2) * Math.sqrt(obj.energy / obj.energyCapacity);
+		if (e > 0) e = Math.max(1, e);
+		g.drawCircle(S(5), S(5), e);
 		g.endFill();
 	}
 }
