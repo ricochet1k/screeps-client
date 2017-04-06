@@ -94,22 +94,27 @@ export class ScreepsClient {
     this.rooms = rooms;
     console.log(rooms);
 
-    this.setRoom(rooms[0]);
+    if (this.roomName !== "")
+      this.setRoom(this.roomName);
 
     requestAnimationFrame(ts => { this.gameLoop(ts); });
   }
 
   setRoom(roomName) {
+    console.log('client setRoom', roomName);
     this.roomName = roomName;
     if (this[ROOM]){
       this.screeps.unsubscribe(`room:${this[ROOM].name}`);
       this[STAGE].removeChild(this[ROOM].g);
+      this[ROOM] = undefined;
     }
 
-    this.screeps.unsubscribe(`room:${roomName}`);
-    this.screeps.subscribe(`room:${roomName}`);
-    this[ROOM] = new Room(this.screeps, roomName);
-    this[STAGE].addChild(this[ROOM].g);
+    if (roomName !== "") {
+      this.screeps.unsubscribe(`room:${roomName}`);
+      this.screeps.subscribe(`room:${roomName}`);
+      this[ROOM] = new Room(this.screeps, roomName);
+      this[STAGE].addChild(this[ROOM].g);
+    }
   }
 
 

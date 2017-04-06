@@ -2,54 +2,24 @@
 
   <div id="app">
     <table cellpadding="0" cellspacing="0" width="100%" height="100%">
-      <tr height="0%"><td>
-        <div id="topbar">
-          <div>
-            <form @submit.prevent="connect()">
-              <label for="host">host:</label>
-              <input id="host" v-model="host" />
-              <label for="port">port:</label>
-              <input id="port" v-model="port" />
-              <label for="secure">secure:</label>
-              <input id="secure" v-model="secure" type="checkbox" />
-              <label for="email">email:</label>
-              <input id="email" v-model="email" />
-              <label for="password">password:</label>
-              <input id="password" v-model="password" type="password" />
+      <tr height="0%"><td id="topbar">
+        <form @submit.prevent="connect()">
+          <label for="host">host:</label>
+          <input id="host" v-model="host" />
+          <label for="port">port:</label>
+          <input id="port" v-model="port" />
+          <label for="secure">secure:</label>
+          <input id="secure" v-model="secure" type="checkbox" />
+          <label for="email">email:</label>
+          <input id="email" v-model="email" />
+          <label for="password">password:</label>
+          <input id="password" v-model="password" type="password" />
 
-              <button @click.prevent="connect()">Connect</button>
-            </form>
-          </div>
-          <div>
-            <span>Credits: {{money}}</span>
-            <span>CPU: {{cpu}}</span>
-            <span>Memory: {{memory}}</span>
-            <select :value="roomName" @input="client.setRoom($event.target.value)">
-              <option v-for="roomName in rooms" :key="roomName" :value="roomName">
-                {{ roomName }}
-              </option>
-            </select>
-            <input id="room" :value="roomName" @change="client.setRoom($event.target.value)" />
-          </div>
-        </div>
+          <button @click.prevent="connect()">Connect</button>
+        </form>
       </td></tr>
       <tr><td id="main-td">
-        <div id="main">
-          <split-pane @resize="onResize()">
-            <div slot="left" style="height: 100%;">
-              <div id="roomMaps">
-                <room-map v-for="roomName in rooms" :key="roomName" :room-name="roomName" :api="api" @click="client.setRoom(roomName)"></room-map>
-              </div>
-              <game :client="client"></game>
-            </div>
-            <div slot="right" style="height: 100%;">
-              <split-pane-vertical>
-                <div slot="left">&nbsp;</div>
-                <console slot="right" :api="api"></console>
-              </split-pane-vertical>
-            </div>
-          </split-pane>
-        </div>
+        <router-view></router-view>
       </td></tr>
     </table>
   </div>
@@ -58,11 +28,6 @@
 
 <script>
 
-import SplitPane from './SplitPane.vue';
-import SplitPaneVertical from './SplitPaneVertical.vue';
-import Game from './Game.vue';
-import Console from './Console.vue';
-import RoomMap from './RoomMap.vue';
 import eventBus from '../global-events';
 import { ScreepsAPI } from '../scripts/screepsAPI';
 import {ScreepsClient} from '../scripts/client';
@@ -103,31 +68,32 @@ export default {
 
       email,
       password,
-
-      api: null,
-      client: null,
     }
   },
 
   mounted() {
     this.connect();
+
+    if (this.$route.path === '/') {
+
+      let unwatch = this.$watch(function() { return this.client && this.client.rooms && this.client.rooms[0] }, function(rooms) {
+        console.log('watch rooms', rooms);
+        if (!rooms || !rooms[0]) return;
+
+        if (this.$route.path === '/') {
+          this.$router.replace({name: 'room', params: {roomName: this.client.rooms[0]}});
+        }
+        unwatch();
+      }, {immediate: true});
+    }
   },
 
   computed: {
-    money() {
-      return this.client && this.client.money || 0;
+    api() {
+      return eventBus.api;
     },
-    cpu() {
-      return this.client && this.client.cpuMemory? this.client.cpuMemory.cpu : 0;
-    },
-    memory() {
-      return this.client && this.client.cpuMemory? this.client.cpuMemory.memory : 0;
-    },
-    roomName() {
-      return this.client && this.client.roomName || "";
-    },
-    rooms() {
-      return this.client && this.client.rooms || [];
+    client() {
+      return eventBus.client;
     }
   },
 
@@ -145,7 +111,7 @@ export default {
         password: this.password,
       }))
 
-      this.api = new ScreepsAPI({
+      eventBus.api = new ScreepsAPI({
           host: this.host,
           port: this.port,
           secure: this.secure,
@@ -153,19 +119,11 @@ export default {
           email: this.email,
           password: this.password,
         })
-      this.client = new ScreepsClient(this.api);
-    },
-    onResize() {
-      eventBus.$emit('resize');
+      eventBus.client = new ScreepsClient(eventBus.api);
     }
   },
 
-  components: { 
-    Game,
-    Console,
-    SplitPane,
-    SplitPaneVertical,
-    RoomMap,
+  components: {
   },
 }
 </script>
