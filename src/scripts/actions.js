@@ -1,11 +1,11 @@
-import {SQUARE_SIZE, TWEEN_DURATION} from './const';
+import {SQUARE_SIZE, TWEEN_DURATION, S} from './const';
 import {tween, tweenRotation, interp} from './tween';
 
-export function actionLine(room, action, from, to) {
+export function actionLine(room, action, from, to, color) {
 	let g = new PIXI.Graphics();
 	room.g.addChild(g);
 
-	const color = 0xffff00;
+	color = color || 0xffff00;
 
 	const fx = (from.x + 0.5) * SQUARE_SIZE;
 	const fy = (from.y + 0.5) * SQUARE_SIZE;
@@ -46,5 +46,32 @@ export function bump(g, gRot, obj, a) {
 		}
 		g.x = SQUARE_SIZE * interp(x, a.x, v);
 		g.y = SQUARE_SIZE * interp(y, a.y, v);
+	});
+}
+
+export function flash(container, color) {
+	let g = new PIXI.Graphics();
+	g.position.set(S(5), S(5));
+	g.pivot.set(S(5), S(5));
+	container.addChild(g);
+
+	color = color || 0xffff00;
+
+	tween(TWEEN_DURATION, {}, v => {
+		if (v === 1) {
+			container.removeChild(g);
+			return;
+		}
+
+		if (v < 0.5) {
+			v = v;
+		} else {
+			v = (1 - v);
+		}
+
+		g.clear();
+		g.beginFill(color, v);
+		g.drawCircle(S(5), S(5), S(5));
+		g.endFill();
 	});
 }
