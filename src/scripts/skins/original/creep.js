@@ -37,6 +37,9 @@ export class CreepSkin {
 					bump(this.g, g, obj, a);
 					break;
 
+				case 'say':
+					break;
+
 				case 'repair':
 				case 'build':
 				case 'upgradeController':
@@ -54,13 +57,16 @@ export class CreepSkin {
 					actionLine(room, k, {x: obj.x, y: obj.y}, a, 0x0000FF);
 					break;
 
+				case 'attack':
+					bump(this.g, g, obj, a)
+
 				default:
 					console.log("actionLog", k, a, this);
 			}
 		}
 
-		if("say" in obj.actionLog) {
-			obj.saying = obj.actionLog.saying;
+		if(obj.actionLog && "say" in obj.actionLog) {
+			obj.saying = obj.actionLog.say;
 		}
 		if(obj.saying) {
 			say(this.g, obj.saying.message);
@@ -99,12 +105,14 @@ export class CreepSkin {
 		g.arc(m, m, pr-pw, +workAL, -workAL, true);
 		g.endFill();
 
-		g.lineStyle(0, 0, 0);
-		g.beginFill(0xffff00);
-		let e = S(2.5) * Math.sqrt(obj.energy / obj.energyCapacity);
-		if (e > 0) e = Math.max(1, e);
-		g.drawCircle(m, m, e);
-		g.endFill();
+		if(obj.carryCapacity) {
+			g.lineStyle(0, 0, 0);
+			g.beginFill(0xffff00);
+			let e = S(2.5) * Math.sqrt(obj.energy / obj.carryCapacity);
+			if (e > 0) e = Math.max(1, e);
+			g.drawCircle(m, m, e);
+			g.endFill();
+		}
 
 		tweenRotation(TWEEN_DURATION/2, g, this.creep.lastObj, obj);
 	}
