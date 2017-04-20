@@ -1,7 +1,7 @@
 
 import {S, SQUARE_SIZE, TWEEN_DURATION} from '../../const';
 import {tween, tweenRotation, interp} from '../../tween';
-import {actionLine, bump, flash} from '../../actions';
+import {actionLine, bump, flash, say} from '../../actions';
 
 export class CreepSkin {
 	constructor(creep) {
@@ -37,9 +37,6 @@ export class CreepSkin {
 					bump(this.g, g, obj, a);
 					break;
 
-				case 'say':
-					break;
-
 				case 'repair':
 				case 'build':
 				case 'upgradeController':
@@ -60,6 +57,13 @@ export class CreepSkin {
 				default:
 					console.log("actionLog", k, a, this);
 			}
+		}
+
+		if("say" in obj.actionLog) {
+			obj.saying = obj.actionLog.saying;
+		}
+		if(obj.saying) {
+			say(this.g, obj.saying.message);
 		}
 
 		g.clear();

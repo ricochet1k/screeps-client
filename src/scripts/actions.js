@@ -75,3 +75,30 @@ export function flash(container, color) {
 		g.endFill();
 	});
 }
+
+export function say(container, text) {
+	const textBubbleStyle = {
+		fontSize: S(5),
+	};
+
+	var text = new PIXI.Text(text, textBubbleStyle);
+
+	var bubble = new PIXI.Graphics();
+	bubble.beginFill(0xFFFFFF, 1);
+	bubble.drawRoundedRect(0, 0, text.width, text.height, 3);
+	bubble.endFill();
+
+	bubble.position.set(S(5) - (text.width / 2), 0);
+	text.position.set(S(5) - (text.width / 2), 0);
+
+	container.addChild(bubble);
+	container.addChild(text);
+
+	tween(TWEEN_DURATION, {}, v => {
+		if (v === 1) {
+			container.removeChild(text);
+			container.removeChild(bubble);
+			return;
+		}
+	});
+}
