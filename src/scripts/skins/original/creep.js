@@ -105,10 +105,10 @@ export class CreepSkin {
 		g.arc(m, m, pr-pw, +workAL, -workAL, true);
 		g.endFill();
 
-		if(obj.carryCapacity) {
+		if(obj.energyCapacity) {
 			g.lineStyle(0, 0, 0);
 			g.beginFill(0xffff00);
-			let e = S(2.5) * Math.sqrt(obj.energy / obj.carryCapacity);
+			let e = S(2.5) * Math.sqrt(obj.energy / obj.energyCapacity);
 			if (e > 0) e = Math.max(1, e);
 			g.drawCircle(m, m, e);
 			g.endFill();
