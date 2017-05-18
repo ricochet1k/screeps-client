@@ -38,6 +38,9 @@ export class CreepSkin {
 					break;
 
 				case 'say':
+					if(a) {
+						say(this.g, a.message);
+					}
 					break;
 
 				case 'repair':
@@ -63,13 +66,6 @@ export class CreepSkin {
 				default:
 					console.log("actionLog", k, a, this);
 			}
-		}
-
-		if(obj.actionLog && "say" in obj.actionLog) {
-			obj.saying = obj.actionLog.say;
-		}
-		if(obj.saying) {
-			say(this.g, obj.saying.message);
 		}
 
 		g.clear();
