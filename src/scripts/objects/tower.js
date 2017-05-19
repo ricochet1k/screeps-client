@@ -32,8 +32,13 @@ export default class Tower extends GameObject {
 				switch (k) {
 					case 'repair':
 					case 'build':
-					case 'attack':
 						actionLine(room, k, {x: obj.x, y: obj.y}, a);
+						break;
+					case 'heal':
+						actionLine(room, k, {x: obj.x, y: obj.y}, a, 0x00FF00);
+						break;
+					case 'attack':
+						actionLine(room, k, {x: obj.x, y: obj.y}, a, 0x0000FF);
 						break;
 
 					default:
@@ -80,7 +85,7 @@ export default class Tower extends GameObject {
 	}
 
 
-	
+
 
 	preRender(ts) {
 		super.preRender(ts);

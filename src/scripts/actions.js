@@ -1,11 +1,9 @@
-import {SQUARE_SIZE, TWEEN_DURATION} from './const';
+import {SQUARE_SIZE, TWEEN_DURATION, S} from './const';
 import {tween, tweenRotation, interp} from './tween';
 
-export function actionLine(room, action, from, to) {
+export function actionLine(room, action, from, to, color = 0xffff00) {
 	let g = new PIXI.Graphics();
 	room.g.addChild(g);
-
-	const color = 0xffff00;
 
 	const fx = (from.x + 0.5) * SQUARE_SIZE;
 	const fy = (from.y + 0.5) * SQUARE_SIZE;
@@ -46,5 +44,59 @@ export function bump(g, gRot, obj, a) {
 		}
 		g.x = SQUARE_SIZE * interp(x, a.x, v);
 		g.y = SQUARE_SIZE * interp(y, a.y, v);
+	});
+}
+
+export function flash(container, color = 0xffff00) {
+	let g = new PIXI.Graphics();
+	g.position.set(S(5), S(5));
+	g.pivot.set(S(5), S(5));
+	container.addChild(g);
+
+	g.clear();
+	g.beginFill(color);
+	g.drawCircle(S(5), S(5), S(5));
+	g.endFill();
+
+	tween(TWEEN_DURATION, {}, v => {
+		if (v === 1) {
+			container.removeChild(g);
+			return;
+		}
+
+		if (v < 0.5) {
+			v = v;
+		} else {
+			v = (1 - v);
+		}
+
+		g.alpha = v;
+	});
+}
+
+export function say(container, text) {
+	const textBubbleStyle = {
+		fontSize: S(5),
+	};
+
+	var text = new PIXI.Text(text, textBubbleStyle);
+
+	var bubble = new PIXI.Graphics();
+	bubble.beginFill(0xFFFFFF, 1);
+	bubble.drawRoundedRect(0, 0, text.width, text.height, 3);
+	bubble.endFill();
+
+	bubble.position.set(S(5) - (text.width / 2), -S(5));
+	text.position.set(S(5) - (text.width / 2), -S(5));
+
+	container.addChild(bubble);
+	container.addChild(text);
+
+	tween(TWEEN_DURATION, {}, v => {
+		if (v === 1) {
+			container.removeChild(text);
+			container.removeChild(bubble);
+			return;
+		}
 	});
 }

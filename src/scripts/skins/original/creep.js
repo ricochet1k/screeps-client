@@ -1,7 +1,7 @@
 
 import {S, SQUARE_SIZE, TWEEN_DURATION} from '../../const';
 import {tween, tweenRotation, interp} from '../../tween';
-import {actionLine, bump} from '../../actions';
+import {actionLine, bump, flash, say} from '../../actions';
 
 export class CreepSkin {
 	constructor(creep) {
@@ -38,6 +38,9 @@ export class CreepSkin {
 					break;
 
 				case 'say':
+					if(a) {
+						say(this.g, a.message);
+					}
 					break;
 
 				case 'repair':
@@ -47,12 +50,18 @@ export class CreepSkin {
 					break;
 
 				case 'attacked':
-					// actionLine(room, k, a, {x: obj.x, y: obj.y});
+					flash(this.g, 0xFF0000);
+					break;
+				case 'healed':
+					flash(this.g, 0x00FF00);
 					break;
 
 				case 'rangedAttack':
-					actionLine(room, k, {x: obj.x, y: obj.y}, a);
+					actionLine(room, k, {x: obj.x, y: obj.y}, a, 0x0000FF);
 					break;
+
+				case 'attack':
+					bump(this.g, g, obj, a)
 
 				default:
 					console.log("actionLog", k, a, this);
@@ -92,12 +101,14 @@ export class CreepSkin {
 		g.arc(m, m, pr-pw, +workAL, -workAL, true);
 		g.endFill();
 
-		g.lineStyle(0, 0, 0);
-		g.beginFill(0xffff00);
-		let e = S(2.5) * Math.sqrt(obj.energy / obj.energyCapacity);
-		if (e > 0) e = Math.max(1, e);
-		g.drawCircle(m, m, e);
-		g.endFill();
+		if(obj.energyCapacity) {
+			g.lineStyle(0, 0, 0);
+			g.beginFill(0xffff00);
+			let e = S(2.5) * Math.sqrt(obj.energy / obj.energyCapacity);
+			if (e > 0) e = Math.max(1, e);
+			g.drawCircle(m, m, e);
+			g.endFill();
+		}
 
 		tweenRotation(TWEEN_DURATION/2, g, this.creep.lastObj, obj);
 	}
@@ -106,4 +117,3 @@ export class CreepSkin {
 
 	}
 }
-
