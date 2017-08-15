@@ -22,13 +22,15 @@ export class ScreepsAPI extends EventEmitter {
       this.prefix = (opts.secure? 'https' : 'http') + '://' + opts.host + ":" + opts.port
     else
       this.prefix = opts.ptr ? 'https://screeps.com/ptr' : 'https://screeps.com'
+ 
+    this.token = '';
+    this.user = null;
+    this.ws = null;
+    this.connected = false;
   }
 
-  async req(method, path, body) {
-    if (!this.token && !path.match(/auth/)) 
-      return this.getToken(() => this.req(method, path, body, cb))
-
-    let res = await axios({
+  async rawreq(method, path, body) {
+    return await axios({
       url: this.prefix + path,
       json: true,
       method,
@@ -39,6 +41,13 @@ export class ScreepsAPI extends EventEmitter {
       data: method == 'POST' ? body : undefined || undefined,
       params: method == 'GET' ? body : undefined || undefined
     });
+  }
+
+  async req(method, path, body) {
+    if (!this.token && !path.match(/auth/)) 
+      return this.getToken(() => this.req(method, path, body))
+
+    let res = await this.rawreq(method, path, body);
 
     if (res.status == 200) {
       if (res.headers['x-token'])
@@ -59,6 +68,7 @@ export class ScreepsAPI extends EventEmitter {
     if (this.ws) {
       this.ws.close();
       this.ws = null;
+      this.connected = false;
     }
   }
   auth(email, password) {
@@ -66,6 +76,13 @@ export class ScreepsAPI extends EventEmitter {
     this.password = password
     return this.getToken()
     //(err, token) => cb(null, token !== 'unauthorized')
+  }
+
+
+
+  async register(username, email, password) {
+    let res = await this.rawreq('POST', '/api/register/submit', {username, email, password});
+    return res.data;
   }
 
   async getToken() {
@@ -126,6 +143,7 @@ export class ScreepsAPI extends EventEmitter {
       ws.onopen = () => {
         this.wssend('gzip on');
         this.wssend(`auth ${this.token}`);
+        this.connected = true;
         resolve();
       };
     })
@@ -249,8 +267,34 @@ export class ScreepsAPI extends EventEmitter {
     let cached;
     if (cached = this.roomTerrainCache[room + !!encoded])
       return cached;
-    let res = await this.req('GET', '/api/game/room-terrain', {room, encoded: encoded? 'true' : undefined});
+    let params = {room, encoded: encoded? 'true' : undefined};
+    let roomParts = room.split('/');
+    if (roomParts.length === 2) {
+      params.shard = roomParts[0];
+      params.room = roomParts[1];
+    }
+    let res = await this.req('GET', '/api/game/room-terrain', params);
     this.roomTerrainCache[room + !!encoded] = res.data;
+    return res.data;
+  }
+
+  async branches() {
+    let res = await this.req('GET', '/api/user/branches');
+    return res.data;
+  }
+
+  async setActiveBranch(branch, activeName) {
+    let res = await this.req('POST', '/api/user/set-active-branch', {branch, activeName});
+    return res.data;
+  }
+
+  async cloneBranch(branch, newName, defaultModules) {
+    let res = await this.req('POST', '/api/user/clone-branch', {branch, newName, defaultModules});
+    return res.data;
+  }
+
+  async deleteBranch(branch) {
+    let res = await this.req('POST', '/api/user/delete-branch', {branch});
     return res.data;
   }
 
@@ -263,6 +307,13 @@ export class ScreepsAPI extends EventEmitter {
     return res.data;
   }
 
+  async setCode(branch, modules, _hash) {
+    if (!_hash)
+      _hash = Date.now();
+    let res = await this.req('POST', '/api/user/code', {branch, modules, _hash});
+    return res.data;
+  }
+
   /**
    * {"ok":1,"rooms":[]}
    */
@@ -272,12 +323,16 @@ export class ScreepsAPI extends EventEmitter {
   }
 
   /**
-   * {"ok":1,"rooms":["E83N7"]}
+   * OLD: {"ok":1,"rooms":["E83N7"]}
+   * NEW: {"ok":1,"shards":{"shard0":[],"shard1":["E2S29"]}}
    */
   async rooms(id) {
     if (id === undefined) id = this.user._id;
     let res = await this.req('GET', '/api/user/rooms', {id});
-    return res.data;
+    let ret = res.data;
+    // if (ret.rooms)
+    //   ret.shards = {shard0: ret.rooms};
+    return ret;
   }
 
   /**
@@ -302,6 +357,11 @@ export class ScreepsAPI extends EventEmitter {
    */
   async leaderboardFind(username, mode) {
     let res = await this.req('GET', '/api/leaderboard/find', {username, mode});
+    return res.data;
+  }
+
+  async placeSpawn(name, room, x, y) {
+    let res = await this.req('POST', '/api/game/place-spawn', {name, room, x, y});
     return res.data;
   }
 }

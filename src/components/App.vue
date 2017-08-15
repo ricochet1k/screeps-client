@@ -16,6 +16,8 @@
           <input id="password" v-model="password" type="password" />
 
           <button @click.prevent="connect()">Connect</button>
+
+          <router-link to="register">register</router-link>
         </form>
       </td></tr>
       <tr><td id="main-td">
@@ -54,11 +56,11 @@ export default {
       secure = window.location.protocol === 'https:';
       port = window.location.port || (secure? '443' : '21025');
 
-      if (window.location.hostname === "localhost") {
-        host = 'screeps-test.ags131.ovh';
-        port = 21025;
-        secure = false;
-      }
+      // if (window.location.hostname === "localhost") {
+      //   host = 'screeps-test.ags131.ovh';
+      //   port = 21025;
+      //   secure = false;
+      // }
     }
 
     return {
@@ -74,15 +76,13 @@ export default {
   mounted() {
     this.connect();
 
+    console.log(this.$route.path);
     if (this.$route.path === '/') {
 
-      let unwatch = this.$watch(function() { return this.client && this.client.rooms && this.client.rooms[0] }, function(rooms) {
+      let unwatch = this.$watch(function() { return this.client && this.client.rooms}, function(rooms) {
         console.log('watch rooms', rooms);
-        if (!rooms || !rooms[0]) return;
-
-        if (this.$route.path === '/') {
-          this.$router.replace({name: 'room', params: {roomName: this.client.rooms[0]}});
-        }
+        if (!rooms) return;
+        this.loadedRooms();
         unwatch();
       }, {immediate: true});
     }
@@ -121,6 +121,21 @@ export default {
         })
       eventBus.client = new ScreepsClient(eventBus.api);
       eventBus.client.connect();
+    },
+
+    loadedRooms() {
+      let rooms = this.client.rooms;
+      if (!rooms) return;
+      if (!rooms[0]) {
+        this.$router.replace({name: 'map'});
+        return;
+      }
+
+      let room = rooms[0];
+
+      if (this.$route.path === '/') {
+        this.$router.replace({name: 'room', params: {roomName: room}});
+      }
     }
   },
 

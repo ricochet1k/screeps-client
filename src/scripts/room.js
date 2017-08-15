@@ -85,6 +85,7 @@ export class Room {
       
       if (t.error) {
         console.log("terrain error", t.error, name);
+        return;
       }
       renderTerrain(this.terrainG, t.terrain[0].terrain);
     });
@@ -252,6 +253,12 @@ export class Room {
 
         if (obj.type in objectTypes)
           type = obj.type;
+        else {
+          console.log('unknown object type: ', obj.type, obj);
+          type = obj.type;
+          objectTypes[type] = objectTypes['unknown'];
+          this.layers[type] = this.layers['unknown'];
+        }
 
         let objType = objectTypes[type];
         // if (!objType) {

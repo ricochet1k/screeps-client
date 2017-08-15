@@ -1,7 +1,7 @@
 
 import Vue from 'vue';
 
-export default new Vue({
+let eventBus = new Vue({
 	data: function() {
 		return {
 			api: null,
@@ -9,3 +9,7 @@ export default new Vue({
 		}
 	}
 });
+
+export default eventBus;
+
+window.eventBus = eventBus;

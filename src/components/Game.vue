@@ -35,6 +35,7 @@ export default {
   mounted() {
   	if (this.client)
       this.attachView();
+    eventBus.$on('resize', this.resizeView);
   },
 
   updated() {
@@ -50,6 +51,7 @@ export default {
   beforeDestroy() {
     if (this.client)
       this.detatchClient(this.client);
+    eventBus.$off('resize', this.resizeView);
   },
 
   methods: {
@@ -63,7 +65,6 @@ export default {
   	},
 
     attachClient(client) {
-      eventBus.$on('resize', this.resizeView);
       client.connect();
       this.attachView();
     },
@@ -74,7 +75,6 @@ export default {
         view.parentElement.removeChild(view);
       // client.destroy();
       client.disconnect();
-      eventBus.$off('resize', this.resizeView);
     }
   }
 }

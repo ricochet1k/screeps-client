@@ -12,6 +12,7 @@
           </option>
         </select>
         <input id="room" :value="roomName" @change="navigateToRoom($event.target.value)" />
+        <router-link :to="{name:'map', query: {room: roomName}}">map</router-link>
       </td></tr>
       <tr><td id="room-main-td">
         <div id="room-main">
@@ -24,7 +25,7 @@
             </div>
             <div slot="right" style="height: 100%;">
               <split-pane-vertical>
-                <div slot="left">&nbsp;</div>
+                <code-pane slot="left" :api="api"></code-pane>
                 <console slot="right" :api="api"></console>
               </split-pane-vertical>
             </div>
@@ -43,6 +44,7 @@ import SplitPaneVertical from './SplitPaneVertical.vue';
 import Game from './Game.vue';
 import Console from './Console.vue';
 import RoomMap from './RoomMap.vue';
+import CodePane from './CodePane.vue';
 import eventBus from '../global-events';
 
 export default {
@@ -88,6 +90,10 @@ export default {
     //   if (this.)
     //   return this.client && this.client.roomName || "";
     // },
+    shards() {
+      return this.client && this.client.shards || {};
+    },
+
     rooms() {
       return this.client && this.client.rooms || [];
     }
@@ -118,6 +124,7 @@ export default {
     SplitPane,
     SplitPaneVertical,
     RoomMap,
+    CodePane,
   },
 }
 </script>

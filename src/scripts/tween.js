@@ -1,4 +1,5 @@
 
+import {lastTimestamp} from './client';
 
 let tweenId = 0;
 let tweeningObjects = {};
@@ -13,7 +14,7 @@ export function tween(time, obj, propOrFn, from = 0, to = 1) {
 
 	tweeningObjects[obj._tween.tweenId] = obj;
 
-	let start = performance.now();
+	let start = lastTimestamp; //performance.now();
 	let end = start + time;
 	obj._tween.tweens[''+propOrFn] = {start, end, from, to, propOrFn};
 }

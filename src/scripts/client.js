@@ -39,11 +39,15 @@ export class ScreepsClient {
 
     this.onMessage = this.onMessage.bind(this);
 
+    this.protocol = 0;
+
     this.money = null;
     this.cpuMemory = {cpu: 0, memory: 0};
 
     this.roomName = "";
-    this.rooms = [];
+    this.shards = null;
+    this.rooms = null;
+
   }
 
   connect() {
@@ -90,9 +94,21 @@ export class ScreepsClient {
     screeps.subscribe(`user:${me._id}/set-active-branch`);
     screeps.subscribe(`user:${me._id}/code`);
 
-    let {rooms} = await screeps.rooms();
+    let {shards, rooms} = await screeps.rooms();
+
+    if (!rooms)
+      rooms = [];
+
+    for (let shard in shards) {
+      for (let room of shards[shard]) {
+        rooms.push(shard + '/' + room);
+      }
+    }
+
+    this.shards = shards;
+    console.log('SHARDS', shards);
     this.rooms = rooms;
-    console.log(rooms);
+    console.log('ROOMS', rooms);
 
     if (this.roomName !== "")
       this.setRoom(this.roomName);
@@ -119,9 +135,17 @@ export class ScreepsClient {
 
 
   onMessage(msg) {
-    if (typeof msg === "string" && msg.match(/^auth/)) {
-      console.log("AUTH", msg);
-      this.finishConnecting();
+    if (typeof msg === "string"){
+      if (msg.match(/^auth/)) {
+        console.log("AUTH", msg);
+        this.finishConnecting();
+      } else if (msg.match(/^protocol/)) {
+        console.log('PROTOCOL', msg.slice(9));
+        this.protocol = +msg.slice(9);
+      } else {
+        console.log("message", JSON.stringify(msg));
+      }
+
     } else if (msg[0].match(/^room:/) && this[ROOM]) {
       this[ROOM].updateRoom(msg[1]);
     } else if (msg[0].match(/^user:\w+\/money$/)) {
@@ -143,6 +167,11 @@ export class ScreepsClient {
     // console.log('render', timestamp);
     if (this.render) requestAnimationFrame(ts => this.gameLoop(ts));
 
+    lastTimestamp = timestamp;
+
+    // if (Math.random() < 0.01)
+    //   console.log('timestamp', timestamp - performance.now());
+
     if (this[ROOM]) this[ROOM].preRender(timestamp);
 
     tween.update(timestamp);
@@ -152,6 +181,7 @@ export class ScreepsClient {
   // requestAnimationFrame(ts => { lastTimestamp = ts; gameLoop(ts); });
 
   resize(...args) {
+    // console.log('client.resize', args);
     return this[RENDERER].resize(...args);
   }
 
@@ -160,4 +190,4 @@ export class ScreepsClient {
   }
 }
 
-
+export let lastTimestamp = 0;

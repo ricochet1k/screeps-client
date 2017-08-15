@@ -32,11 +32,11 @@ export default class GameObject {
 			}
 			obj[k] = dobj[k];
 		}
-		if ("x" in dobj) {
+		if ("x" in dobj && last.x !== obj.x) {
 			tween(TWEEN_DURATION, this, v => this.g.x = v * SQUARE_SIZE, 
 				last.x, obj.x);
 		}
-		if ("y" in dobj) {
+		if ("y" in dobj && last.y !== obj.y) {
 			tween(TWEEN_DURATION, this, v => this.g.y = v * SQUARE_SIZE, 
 				last.y, obj.y);
 		}
