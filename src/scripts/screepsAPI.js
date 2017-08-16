@@ -45,7 +45,7 @@ export class ScreepsAPI extends EventEmitter {
 
   async req(method, path, body) {
     if (!this.token && !path.match(/auth/)) 
-      return this.getToken(() => this.req(method, path, body))
+      return this.getToken().then(() => this.req(method, path, body));
 
     let res = await this.rawreq(method, path, body);
 
@@ -54,10 +54,24 @@ export class ScreepsAPI extends EventEmitter {
         this.token = res.headers['x-token']
     }
     if (res.status == 401) {
-      this.token = ''
+      return this.getToken().then(() => this.req(method, path, body));
     }
 
     return res;
+  }
+
+  async basicAuthReq(method, path, body) {
+    return await axios({
+      url: this.prefix + path,
+      json: true,
+      method,
+      auth: {
+        username: this.opts.email,
+        password: this.opts.password,
+      },
+      data: method == 'POST' ? body : undefined || undefined,
+      params: method == 'GET' ? body : undefined || undefined
+    });
   }
 
   connect() {
