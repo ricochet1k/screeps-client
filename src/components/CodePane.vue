@@ -1,10 +1,16 @@
 <template>
 	<div class="codepane">
+		<input v-model="branch" />
+		<vue-select class="module-select" v-model="module" :options="moduleNames">
+		</vue-select>
+		<input v-model="module" />
+		<button @click.prevent="load()">Load</button>
 		<button @click.prevent="save()">Save</button>
 		<codemirror 
 			ref="editor"
-			v-model="code"
+			:code="code"
 			:options="editorOptions"
+			@change="changeCode"
 		></codemirror>
 
 	</div>
@@ -13,11 +19,14 @@
 <script>
 import eventBus from '../global-events';
 import VueCodemirror from 'vue-codemirror';
+import VueSelect from 'vue-select';
 
 export default {
 	data() {
 		return {
-			code: '',
+			branch: 'default',
+			modules: {},
+			module: 'main',
 			editorOptions: {
 				theme: 'monokai',
 				lineNumbers: true,
@@ -42,19 +51,37 @@ export default {
 					setTimeout( () => this.load(), 1000);
 			})
 	},
+	computed: {
+		code() {
+			return this.modules[this.module] || '';
+		},
+		moduleNames() {
+			return Object.keys(this.modules);
+		}
+	},
 	methods: {
 		async load() {
-			let r = await eventBus.api.code('default');
+			let r = await eventBus.api.code(this.branch);
 			console.log('code', r);
 			let {modules} = r;
-			this.code = modules.main;
+			if (modules)
+				this.modules = modules;
+			else
+				this.modules = {};
 		},
 		save() {
-			eventBus.api.setCode('default', {main: this.code});
+			eventBus.api.setCode(this.branch, this.modules);
+		},
+		changeCode(newCode) {
+			if (!this.modules[this.module] && newCode === '')
+				return;
+			
+			this.$set(this.modules, this.module, newCode);
 		}
 	},
 	components: {
 		codemirror: VueCodemirror.codemirror,
+		VueSelect,
 	}
 }
 </script>
@@ -65,5 +92,10 @@ export default {
 }
 .codepane .CodeMirror {
 	height: 100%;
+}
+
+.module-select {
+	max-width: 50%;
+	display: inline-block;
 }
 </style>

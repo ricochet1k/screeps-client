@@ -31,6 +31,7 @@
     "vue": "^2.2.1",
     "vue-class-component": "^5.0.0",
     "vue-router": "^2.3.1",
+    "vue-select": "github:sagalbot/vue-select",
     "vue-split-pane": "0.0.1"
   },
   "dependencies": {
