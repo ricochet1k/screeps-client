@@ -38,6 +38,7 @@ export class ScreepsClient {
     this[STAGE] = new PIXI.Container();
 
     this.onMessage = this.onMessage.bind(this);
+    this.onRoomUpdate = this.onRoomUpdate.bind(this);
 
     this.protocol = 0;
 
@@ -62,7 +63,7 @@ export class ScreepsClient {
     this.screeps.on("message", this.onMessage);
 
 
-    this.startScreepsConn().catch(e => console.error('client.connect()', e));
+    return this.startScreepsConn().catch(e => console.error('client.connect()', e));
   }
 
   disconnect() {
@@ -75,7 +76,7 @@ export class ScreepsClient {
   async startScreepsConn() {
     let screeps = this.screeps; 
 
-    await screeps.connect();
+    // await screeps.connect();
     this.me = await screeps.me();
     console.log('me', this.me);
     await screeps.socket();
@@ -85,16 +86,18 @@ export class ScreepsClient {
     let screeps = this.screeps; 
     let me = this.me;
 
-    screeps.subscribe('server-message');
-    screeps.subscribe(`user:${me._id}/money`);
-    screeps.subscribe(`user:${me._id}/cpu`);
-    screeps.subscribe(`user:${me._id}/newMessage`);
-    screeps.subscribe(`user:${me._id}/memory`);
-    screeps.subscribe(`user:${me._id}/console`);
-    screeps.subscribe(`user:${me._id}/set-active-branch`);
-    screeps.subscribe(`user:${me._id}/code`);
+    screeps.subscribe('server-message', this.onServerMessage.bind(this));
+    screeps.subscribe(`user:${me._id}/money`, this.onMoney.bind(this));
+    screeps.subscribe(`user:${me._id}/cpu`, this.onCPU.bind(this));
+    screeps.subscribe(`user:${me._id}/newMessage`, this.onNewMessage.bind(this));
+    screeps.subscribe(`user:${me._id}/memory`, this.onMemory.bind(this));
+    screeps.subscribe(`user:${me._id}/console`, this.onConsole.bind(this));
+    screeps.subscribe(`user:${me._id}/set-active-branch`, this.onActiveBranch.bind(this));
+    screeps.subscribe(`user:${me._id}/code`, this.onCode.bind(this));
 
-    let {shards, rooms} = await screeps.rooms();
+    let apirooms = await screeps.rooms();
+    console.log(apirooms);
+    let {shards, rooms} = apirooms;
 
     if (!rooms)
       rooms = [];
@@ -120,14 +123,14 @@ export class ScreepsClient {
     console.log('client setRoom', roomName);
     this.roomName = roomName;
     if (this[ROOM]){
-      this.screeps.unsubscribe(`room:${this[ROOM].name}`);
+      this.screeps.unsubscribe(`room:${this[ROOM].name}`, this.onRoomUpdate);
       this[STAGE].removeChild(this[ROOM].g);
       this[ROOM] = undefined;
     }
 
     if (roomName !== "") {
-      this.screeps.unsubscribe(`room:${roomName}`);
-      this.screeps.subscribe(`room:${roomName}`);
+      // this.screeps.unsubscribe(`room:${roomName}`, this.onRoomUpdate);
+      this.screeps.subscribe(`room:${roomName}`, this.onRoomUpdate);
       this[ROOM] = new Room(this.screeps, roomName);
       this[STAGE].addChild(this[ROOM].g);
     }
@@ -145,21 +148,41 @@ export class ScreepsClient {
       } else {
         console.log("message", JSON.stringify(msg));
       }
-
-    } else if (msg[0].match(/^room:/) && this[ROOM]) {
-      this[ROOM].updateRoom(msg[1]);
-    } else if (msg[0].match(/^user:\w+\/money$/)) {
-      this.money = msg[1];
-    } else if (msg[0].match(/^user:\w+\/cpu$/)) {
-      this.cpuMemory = msg[1];
-    } else if (msg[0].match(/^user:\w+\/console$/)) {
-      // ignore
-    } else if (msg[0].match(/^roomMap2:/)) {
-      // ignore
     } else {
-      console.log("message", msg)
+      console.log("MESSAGE NOT STRING!", msg)
     }
   }
+
+
+    onServerMessage(path, val) {
+
+    }
+    onMoney(path, val) {
+      this.money = val;
+    }
+    onCPU(path, val) {
+      this.cpuMemory = val;
+    }
+    onNewMessage(path, val) {
+      console.log('newMessage', val);
+    }
+    onMemory(path, val) {
+      console.log('memory', val);
+    }
+    onConsole(path, val) {
+
+    }
+    onActiveBranch(path, val) {
+      console.log('activeBranch', val);
+    }
+    onCode(path, val) {
+      console.log('code', val);
+    }
+
+    onRoomUpdate(path, val) {
+      // console.log('ROOM', path, val);
+      this[ROOM].updateRoom(val);
+    }
 
 
   // let lastTimestamp;

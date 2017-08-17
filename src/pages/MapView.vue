@@ -14,8 +14,8 @@
 
 <script>
 
-import Game from './Game.vue';
-import RoomMap from './RoomMap.vue';
+import Game from '../components/Game.vue';
+import RoomMap from '../components/RoomMap.vue';
 import eventBus from '../global-events';
 
 function fromRoomName(roomName) {

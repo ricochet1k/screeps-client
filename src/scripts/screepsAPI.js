@@ -44,8 +44,10 @@ export class ScreepsAPI extends EventEmitter {
   }
 
   async req(method, path, body) {
-    if (!this.token && !path.match(/auth/)) 
-      return this.getToken().then(() => this.req(method, path, body));
+    if (!this.token && !path.match(/auth/)) {
+      await this.getToken()
+      return await this.req(method, path, body);
+    }
 
     let res = await this.rawreq(method, path, body);
 
@@ -141,7 +143,25 @@ export class ScreepsAPI extends EventEmitter {
         
         msg = gz(msg)
       }
-      if (msg[0] == '[') msg = JSON.parse(msg)
+
+      if (msg[0] == '[') {
+        msg = JSON.parse(msg);
+      }
+
+      if (typeof msg !== 'string') {
+        let subs = this.subscriptions[msg[0]];
+        if (!subs) {
+          console.log("unsolicited message", msg);
+          this.wssend(`unsubscribe ${msg[0]}`);
+          return;
+        }
+        for (let i = 0; i < subs.length; i++) {
+          subs[i](msg[0], msg[1], msg);
+        }
+
+      } else
+        this.emit('message', msg);
+
       // if (msg[0].match(/console/))
       //   this.emit('console', msg)
       // else if (msg[0].match(/memory/))
@@ -151,7 +171,7 @@ export class ScreepsAPI extends EventEmitter {
       // else if (msg[0].match(/room/))
       //   this.emit('room', msg)
       // else
-        this.emit('message', msg)
+
     };
     return await new Promise((resolve, reject) => {
       ws.onopen = () => {
@@ -164,19 +184,29 @@ export class ScreepsAPI extends EventEmitter {
   }
 
   subscriptions = {};
-  subscribe(path) {
+  subscribe(path, cb) {
+    if (!cb) throw "Bad subscribe! " + path;
+    // if (path.match(/^room/)) console.log('SUB', path);
     // if (!path.match(/^([a-z]+):(.+?)$/))
     //   path = `user:${this.user._id}${path}`
-    if (this.subscriptions[path]) return;
-    this.wssend(`subscribe ${path}`);
-    this.subscriptions[path] = true;
+    if (!this.subscriptions[path]) {
+      this.wssend(`subscribe ${path}`);
+      this.subscriptions[path] = [];
+    }
+    this.subscriptions[path].push(cb);
   }
 
-  unsubscribe(path) {
+  unsubscribe(path, cb) {
+    // if (path.match(/^room/)) console.log('UNSUB', path);
     // if (!path.match(/^([a-z]+):(.+?)$/))
     //   path = `user:${this.user._id}${path}`
-    this.wssend(`unsubscribe ${path}`);
-    this.subscriptions[path] = false;
+    let subs = this.subscriptions[path];
+    if (!subs) return;
+    this.subscriptions[path] = subs.filter((c) => c !== cb);
+    if (this.subscriptions[path].length === 0){
+      this.wssend(`unsubscribe ${path}`);
+      this.subscriptions[path] = undefined;
+    }
   }
 
   wssend(...data) {
@@ -335,6 +365,15 @@ export class ScreepsAPI extends EventEmitter {
     let res = await this.req('GET', '/api/user/respawn-prohibited-rooms');
     return res.data;
   }
+
+  /**
+   * {"ok":1,"rooms":[]}
+   */
+  async respawn() {
+    let res = await this.req('POST', '/api/user/respawn');
+    return res.data;
+  }
+
 
   /**
    * OLD: {"ok":1,"rooms":["E83N7"]}

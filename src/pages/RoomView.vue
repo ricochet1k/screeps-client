@@ -39,12 +39,12 @@
 
 <script>
 
-import SplitPane from './SplitPane.vue';
-import SplitPaneVertical from './SplitPaneVertical.vue';
-import Game from './Game.vue';
-import Console from './Console.vue';
-import RoomMap from './RoomMap.vue';
-import CodePane from './CodePane.vue';
+import SplitPane from '../components/SplitPane.vue';
+import SplitPaneVertical from '../components/SplitPaneVertical.vue';
+import Game from '../components/Game.vue';
+import Console from '../components/Console.vue';
+import RoomMap from '../components/RoomMap.vue';
+import CodePane from '../components/CodePane.vue';
 import eventBus from '../global-events';
 
 export default {

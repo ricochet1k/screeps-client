@@ -84,19 +84,17 @@ export default {
 
   methods: {
     connect(api) {
-      api.on('message', this.onMessage);
-      api.subscribe(this.msg);
+      api.subscribe(this.msg, this.onMessage);
     },
 
     disconnect(api) {
-      if (api.off) api.off('message', this.onMessage);
-      api.unsubscribe(this.msg);
+      api.unsubscribe(this.msg, this.onMessage);
     },
 
-    onMessage(msg) {
-      if (msg[0] === this.msg) {
+    onMessage(path, val) {
+      if (path === this.msg) {
         // console.log('roomMap!', Object.keys(msg[1]), JSON.stringify(msg[1]));
-        this.data = msg[1];
+        this.data = val;
       }
     },
     color(kind) {

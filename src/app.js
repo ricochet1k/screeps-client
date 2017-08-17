@@ -1,24 +1,42 @@
 
 import Vue from 'vue';
 import App from './components/App.vue';
-import RoomView from './components/RoomView.vue';
-import Register from './components/Register.vue';
-import MapView from './components/MapView.vue';
+import Root from './pages/Root.vue';
+import Login from './pages/Login.vue';
+import Logout from './pages/Logout.vue';
+import Register from './pages/Register.vue';
+import RoomView from './pages/RoomView.vue';
+import MapView from './pages/MapView.vue';
 import VueRouter from 'vue-router'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
-    name: 'room',
-    path: '/room/:roomName',
-    component: RoomView,
-    props: true
+    name: 'root',
+    path: '/',
+    component: Root
+  },
+  {
+    name: 'login',
+    path: '/login',
+    component: Login
+  },
+  {
+    name: 'logout',
+    path: '/logout',
+    component: Logout
   },
   {
     name: 'register',
     path: '/register',
     component: Register
+  },
+  {
+    name: 'room',
+    path: '/room/:roomName',
+    component: RoomView,
+    props: true
   },
   {
     name: 'map',
@@ -37,6 +55,8 @@ const routes = [
 const router = new VueRouter({
   routes
 })
+
+Vue.router = router;
 
 
 new Vue({
