@@ -83,7 +83,8 @@ let auth = new Vue({
     },
 		connect() {
       if ((!this.email && !this.username) || !this.password) {
-        Vue.router.replace({name: 'login', query: {backto: Vue.router.currentRoute.path}});
+        if (Vue.router.currentRoute.name !== 'login')
+          Vue.router.replace({name: 'login', query: {backto: Vue.router.currentRoute.path}});
         return;
       }
 			if (eventBus.api) eventBus.api.disconnect();

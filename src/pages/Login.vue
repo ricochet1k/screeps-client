@@ -52,12 +52,15 @@ export default {
     if (this.$route.query.auto && auth.password)
       this.login();
 
-    if (this.$route.query.backto){
       this.$watch(() => eventBus.api, api => {
-        if (api)
+        if (!api) return;
+        console.log('API changed', api);
+        if (this.$route.query.backto){
           this.$router.replace(this.$route.query.backto);
+        } else {
+          this.$router.replace('/');
+        }
       })
-    }
   },
 
   methods: {
