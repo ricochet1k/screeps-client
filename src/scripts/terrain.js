@@ -101,41 +101,41 @@ export function renderSquare(g, x, y, ns, color) {
 	if (!l && !tl && !t) {
 		g.arcTo(xs + 0, ys + 0, xs + R, ys + 0, R);
 	} else if (t && l && !tl) {
+		g.lineTo(xs + 0, ys + 0);
 		g.lineTo(xs + -R, ys + 0);
 		g.arcTo(xs + 0, ys + 0, xs + 0, ys + -R, R);
-	} else {
-		g.lineTo(xs + 0, ys + 0);
 	}
+	g.lineTo(xs + 0, ys + 0);
 
 	// top right corner
 	if (!r && !tr && !t) {
 		g.arcTo(xs + s, ys + 0, xs + s, ys + R, R);
 	} else if (t && r && !tr) {
+		g.lineTo(xs + s, ys + 0);
 		g.lineTo(xs + s, ys + -R);
 		g.arcTo(xs + s, ys + 0, xs + s + R, ys + 0, R);
-	} else {
-		g.lineTo(xs + s, ys + 0);
 	}
+	g.lineTo(xs + s, ys + 0);
 
 	// bottom right corner
 	if (!r && !br && !b) {
 		g.arcTo(xs + s, ys + s, xs + R, ys + s, R);
 	} else if (b && r && !br) {
+		g.lineTo(xs + s, ys + s);
 		g.lineTo(xs + s + R, ys + s);
 		g.arcTo(xs + s, ys + s, xs + s, ys + s + R, R);
-	} else {
-		g.lineTo(xs + s, ys + s);
 	}
+	g.lineTo(xs + s, ys + s);
 
 	// bottom left corner
 	if (!l && !bl && !b) {
 		g.arcTo(xs + 0, ys + s, xs + 0, ys + s-R, R);
 	} else if (b && l && !bl) {
+		g.lineTo(xs + 0, ys + s);
 		g.lineTo(xs + 0, ys + s+R);
 		g.arcTo(xs + 0, ys + s, xs + 0 - R, ys + s, R);
-	} else {
-		g.lineTo(xs + 0, ys + s);
 	}
+	g.lineTo(xs + 0, ys + s);
 
 	g.closePath();
 

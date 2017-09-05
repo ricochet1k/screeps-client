@@ -73,6 +73,8 @@ export class Room {
       this.g.addChild(l);
     }
 
+    this.layers['rampart'].container.alpha = 0.6;
+
     this.roomVisualC = new PIXI.Container();
     this.g.addChild(this.roomVisualC);
 
