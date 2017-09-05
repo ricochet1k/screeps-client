@@ -15,6 +15,7 @@ export default {
   data() {
     return {
       lines: [],
+      connected: false,
     }
   },
 
@@ -22,7 +23,7 @@ export default {
     'api': function(api, oldApi) {
       this.disconnect(oldApi);
       this.connect(api);
-    }
+    },
   },
 
   created() {
@@ -40,39 +41,43 @@ export default {
   },
 
   methods: {
+    reconnect(api) {
+
+    },
     connect(api) {
-      if (api && api.on)
-        api.on("message", this.onMessage);
+      if (api && api.socketAuth && api.subscribe){
+        console.log('Console.connect', `user:${api.user._id}/console`, api)
+        api.subscribe(`user:${api.user._id}/console`, this.onMessage);
+        this.connected = true;
+      }
     },
 
     disconnect(api) {
-      if (api && api.off)
-        api.off("message", this.onMessage);
+      this.connected = false;
+      if (api && api.unsubscribe)
+        api.unsubscribe(`user:${api.user._id}/console`, this.onMessage);
     },
 
-    onMessage(msg) {
-      if (msg[0].match(/\/console$/)) {
-
-        const con = this.$refs && this.$refs.consoleWrapper;
-        let isAtBottom = false;
-        if (con) {
-          isAtBottom = con.scrollHeight - con.clientHeight <= con.scrollTop + 1;
-        }
-        if (msg[1].messages && msg[1].messages.log) {
-          for (let m of msg[1].messages.log) {
-            this.lines.push(m);
-          }
-        } else if (msg[1].error) {
-          this.lines.push(msg[1].error);
-        } else {
-          console.log('wierd console', msg[1]);
-        }
-
-        if (isAtBottom)
-          this.$nextTick(() => {
-            con.scrollTop = con.scrollHeight;
-          })
+    onMessage(key, msg) {
+      const con = this.$refs && this.$refs.consoleWrapper;
+      let isAtBottom = false;
+      if (con) {
+        isAtBottom = con.scrollHeight - con.clientHeight <= con.scrollTop + 1;
       }
+      if (msg.messages && msg.messages.log) {
+        for (let m of msg.messages.log) {
+          this.lines.push(m);
+        }
+      } else if (msg.error) {
+        this.lines.push(msg.error);
+      } else {
+        console.log('wierd console', msg);
+      }
+
+      if (isAtBottom)
+        this.$nextTick(() => {
+          con.scrollTop = con.scrollHeight;
+        })
     }
   }
 }

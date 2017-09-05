@@ -71,10 +71,12 @@ export default {
 
   computed: {
     api() {
-      return eventBus.api;
+      if (eventBus.api && eventBus.api.socketAuth)
+        return eventBus.api;
     },
     client() {
-      return eventBus.client;
+      if (eventBus.client && eventBus.client.me)
+        return eventBus.client;
     },
 
     money() {

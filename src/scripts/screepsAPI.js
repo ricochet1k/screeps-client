@@ -27,6 +27,7 @@ export class ScreepsAPI extends EventEmitter {
     this.user = null;
     this.ws = null;
     this.connected = false;
+    this.socketAuth = false;
   }
 
   async rawreq(method, path, body) {
@@ -49,14 +50,25 @@ export class ScreepsAPI extends EventEmitter {
       return await this.req(method, path, body);
     }
 
-    let res = await this.rawreq(method, path, body);
+    let res;
+
+    try {
+      res = await this.rawreq(method, path, body);
+    } catch (e) {
+      console.log('req err:', e);
+      if (path.match(/auth/))
+        throw e;
+      await this.getToken();
+      res = await this.rawreq(method, path, body);
+    }
 
     if (res.status == 200) {
       if (res.headers['x-token'])
         this.token = res.headers['x-token']
     }
     if (res.status == 401) {
-      return this.getToken().then(() => this.req(method, path, body));
+      await this.getToken();
+      return await this.rawreq(method, path, body);
     }
 
     return res;
@@ -85,6 +97,7 @@ export class ScreepsAPI extends EventEmitter {
       this.ws.close();
       this.ws = null;
       this.connected = false;
+      this.socketAuth = false;
     }
   }
   auth(email, password) {
@@ -159,8 +172,12 @@ export class ScreepsAPI extends EventEmitter {
           subs[i](msg[0], msg[1], msg);
         }
 
-      } else
+      } else {
+        if (msg.match(/^auth ok/)) {
+          this.socketAuth = true;
+        }
         this.emit('message', msg);
+      }
 
       // if (msg[0].match(/console/))
       //   this.emit('console', msg)
@@ -215,7 +232,7 @@ export class ScreepsAPI extends EventEmitter {
       console.log("cannot send", data);
       return;
     }
-    this.ws.send(...data)
+    this.ws.send([...data])
   }
 
   get memory () {
