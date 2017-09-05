@@ -1,32 +1,36 @@
 
+import constructedWall from './constructedWall';
+import container from './container';
+import controller from './controller';
+import creep from './creep';
+import energy from './energy';
 import extension from './extension';
+import link from './link';
+import mineral from './mineral';
+import rampart from './rampart';
 import road from './road';
 import source from './source';
-import creep from './creep';
-import tower from './tower';
 import spawn from './spawn';
-import controller from './controller';
-import energy from './energy';
-import mineral from './mineral';
-import container from './container';
-import rampart from './rampart';
 import storage from './storage';
-import constructedWall from './constructedWall';
+import tower from './tower';
+
 import unknown from './unknown';
 
 export default {
+	constructedWall,
+	container,
+	controller,
+	creep,
+	energy,
 	extension,
+	link,
+	mineral,
+	rampart,
 	road,
 	source,
-	creep,
-	tower,
 	spawn,
-	controller,
-	energy,
-	mineral,
-	container,
-	rampart,
 	storage,
-	constructedWall,
+	tower,
+
 	unknown,
 }
