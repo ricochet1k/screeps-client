@@ -1,7 +1,8 @@
 
 import {S, SQUARE_SIZE, TWEEN_DURATION} from '../../const';
 import {tween, tweenRotation, interp} from '../../tween';
-import {actionLine, bump, flash, say} from '../../actions';
+import {actionLine, bump, flash, say, rangedMassAttack} from '../../actions';
+import {donut} from '../../utils/arc';
 
 export class CreepSkin {
 	constructor(creep) {
@@ -60,6 +61,10 @@ export class CreepSkin {
 					actionLine(room, k, {x: obj.x, y: obj.y}, a, 0x0000FF);
 					break;
 
+				case 'rangedMassAttack':
+					rangedMassAttack(this.g, 0x0000FF);
+					break;
+
 				case 'attack':
 					bump(this.g, g, obj, a)
 
@@ -90,15 +95,13 @@ export class CreepSkin {
 		g.lineStyle(0, 0, 0);
 		g.beginFill(0x8888ff);
 		const moveAL = (bodyCount.move || 0) * halfPartWidth;
-		g.arc(m, m, pr, pi - moveAL, pi + moveAL, false);
-		g.arc(m, m, pr-pw, pi + moveAL, pi - moveAL, true);
+		donut(g, m, m, pr, pr-pw, pi - moveAL, pi + moveAL);
 		g.endFill();
 
 		g.lineStyle(0, 0, 0);
 		g.beginFill(0xffff00);
 		const workAL = (bodyCount.work || 0) * halfPartWidth;
-		g.arc(m, m, pr, -workAL, +workAL, false);
-		g.arc(m, m, pr-pw, +workAL, -workAL, true);
+		donut(g, m, m, pr, pr-pw, -workAL, +workAL);
 		g.endFill();
 
 		if(obj.energyCapacity) {

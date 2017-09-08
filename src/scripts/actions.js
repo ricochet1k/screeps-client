@@ -74,6 +74,29 @@ export function flash(container, color = 0xffff00) {
   });
 }
 
+export function rangedMassAttack(container, color = 0xffff00) {
+  let g = new PIXI.Graphics();
+  g.position.set(S(5), S(5));
+  g.pivot.set(S(5), S(5));
+  container.addChild(g);
+
+  g.clear();
+  g.beginFill(color);
+  g.drawCircle(S(5), S(5), S(5));
+  g.endFill();
+
+  tween(TWEEN_DURATION, {}, v => {
+    if (v === 1) {
+      container.removeChild(g);
+      return;
+    }
+
+    g.scale = 1 + v*5;
+
+    g.alpha = 1-v;
+  });
+}
+
 let fontSize = S(8);
 
 export function say(container, text) {

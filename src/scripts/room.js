@@ -61,6 +61,8 @@ export class Room {
       'spawn', 
       'storage', 
       'tower', 
+      'lab', 
+      'link', 
       'creep', 
       'rampart',
       'unknown'
@@ -74,6 +76,7 @@ export class Room {
     }
 
     this.layers['rampart'].container.alpha = 0.6;
+    // this.layers['rampart'].container.cacheAsBitmap = true;
 
     this.roomVisualC = new PIXI.Container();
     this.g.addChild(this.roomVisualC);
@@ -253,7 +256,7 @@ export class Room {
       if (!robj) {
         if (!obj.type) continue; // diff of object we don't have
 
-        if (obj.type in objectTypes)
+        if (this.layers[obj.type])
           type = obj.type;
         else {
           console.log('unknown object type: ', obj.type, obj);

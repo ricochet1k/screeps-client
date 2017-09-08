@@ -5,6 +5,7 @@ import controller from './controller';
 import creep from './creep';
 import energy from './energy';
 import extension from './extension';
+import lab from './lab';
 import link from './link';
 import mineral from './mineral';
 import rampart from './rampart';
@@ -23,6 +24,7 @@ export default {
 	creep,
 	energy,
 	extension,
+	lab,
 	link,
 	mineral,
 	rampart,
