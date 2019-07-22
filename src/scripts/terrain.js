@@ -64,16 +64,22 @@ export function clampXYf(f) {
 
 export function neighbors(x, y, f) {
 	let ns = [];
-	ns.push(f(x-1, y-1));
-	ns.push(f(x, y-1));
-	ns.push(f(x+1, y-1));
+	
+	let x1 = x - 1;
+	let x2 = x + 1;
+	let y1 = y - 1;
+	let y2 = y + 1;
+	
+	ns.push(f(x1, y1));
+	ns.push(f(x, y1));
+	ns.push(f(x2, y1));
 
-	ns.push(f(x-1, y));
-	ns.push(f(x+1, y));
+	ns.push(f(x1, y));
+	ns.push(f(x2, y));
 
-	ns.push(f(x-1, y+1));
-	ns.push(f(x, y+1));
-	ns.push(f(x+1, y+1));
+	ns.push(f(x1, y2));
+	ns.push(f(x, y2));
+	ns.push(f(x2, y2));
 	return ns;
 }
 
